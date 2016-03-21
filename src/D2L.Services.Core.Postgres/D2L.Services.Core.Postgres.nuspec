@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package>
+	<metadata>
+		<id>$id$</id>
+		<title>$id$</title>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
+		<projectUrl>https://git.dev.d2l/projects/D2LSER/repos/d2l.services.core.postgres</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>$description$</description>
+		<copyright>$copyright$</copyright>
+		<version>$version$</version>
+	</metadata>
+</package>
