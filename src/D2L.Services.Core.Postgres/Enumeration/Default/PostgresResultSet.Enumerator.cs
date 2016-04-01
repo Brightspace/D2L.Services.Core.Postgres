@@ -30,34 +30,38 @@ namespace D2L.Services.Core.Postgres.Enumeration.Default {
 			}
 			
 			~InternalEnumerator() {
+				if( m_disposed ) {
+					return;
+				}
+				
 				try {
-					if( !m_disposed ) {
-						Trace.TraceError(
-							"An online database result set is no longer " +
-							"being used, but it has not been disposed. You " +
-							"must dispose the result set either by fully " +
-							"enumerating it or by explicitly calling Dispose()."
-						);
-					}
+					Trace.TraceError(
+						"An online database result set is no longer being "+
+						"used, but it has not been disposed. You must dispose "+
+						"the result set either by fully enumerating it or by "+
+						"explicitly calling Dispose()."
+					);
 				} catch {}
 			}
 			
 			void IDisposable.Dispose() {
-				if( !m_disposed ) {
-					NpgsqlConnection connection = m_command.Connection;
-					NpgsqlTransaction transaction = m_command.Transaction;
-					try {
-						m_reader.Dispose();
-						transaction.Commit();
-					} finally {
-						m_disposed = true;
-						// Using 'using' statements ensures that Dispose() gets
-						// called on everything even if one of the Dipose()
-						// methods throws an exception
-						using( connection ) {
-							using( transaction ) {
-								using( m_command ) {}
-							}
+				if( m_disposed ) {
+					return;
+				}
+				
+				NpgsqlConnection connection = m_command.Connection;
+				NpgsqlTransaction transaction = m_command.Transaction;
+				try {
+					m_reader.Dispose();
+					transaction.Commit();
+				} finally {
+					m_disposed = true;
+					// Using 'using' statements ensures that Dispose() gets
+					// called on everything even if one of the Dipose()
+					// methods throws an exception
+					using( connection ) {
+						using( transaction ) {
+							using( m_command ) {}
 						}
 					}
 				}

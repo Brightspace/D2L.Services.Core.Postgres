@@ -17,21 +17,23 @@ namespace D2L.Services.Core.Postgres {
 			this IDisposable disposable,
 			ref Exception currentException
 		) {
-			if( disposable != null ) {
-				try {
-					disposable.Dispose();
-				} catch( Exception newException ) {
-					if( currentException is AggregateException ) {
-						List<Exception> exceptions = new List<Exception>();
-						exceptions.AddRange( ((AggregateException)currentException).InnerExceptions );
-						exceptions.Add( newException );
-						currentException = new AggregateException( exceptions );
-					} else {
-						currentException = new AggregateException(
-							currentException,
-							newException
-						);
-					}
+			if( disposable == null ) {
+				return;
+			}
+			
+			try {
+				disposable.Dispose();
+			} catch( Exception newException ) {
+				if( currentException is AggregateException ) {
+					List<Exception> exceptions = new List<Exception>();
+					exceptions.AddRange( ((AggregateException)currentException).InnerExceptions );
+					exceptions.Add( newException );
+					currentException = new AggregateException( exceptions );
+				} else {
+					currentException = new AggregateException(
+						currentException,
+						newException
+					);
 				}
 			}
 		}
