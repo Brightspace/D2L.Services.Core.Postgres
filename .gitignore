@@ -1,6 +1,6 @@
-/bin
+/build
 /obj
-/src/packages
-/build/*.nupkg
-/build/publish-*.bat
+/packages
+/publish/*.nupkg
+/publish/publish-*.bat
 NuGet.exe
