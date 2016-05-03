@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace D2L.Services.Core.Postgres.Exceptions {
+namespace D2L.Services.Core.Postgres {
 	
 	/// <summary>
 	/// An exception that is thrown when a database query for a single record or

@@ -1,5 +1,4 @@
 ﻿using D2L.Services.Core.Postgres.Enumeration;
-using D2L.Services.Core.Postgres.Exceptions;
 using Npgsql;
 using System;
 using System.Collections.Generic;
