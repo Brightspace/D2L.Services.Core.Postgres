@@ -1,5 +1,4 @@
-﻿using D2L.Services.Core.Postgres.Enumeration;
-using Npgsql;
+﻿using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -143,11 +142,6 @@ namespace D2L.Services.Core.Postgres.Default {
 			return results;
 		}
 		
-		public abstract IOnlineResultSet<Dto> ExecReadOnline<Dto>(
-			PostgresCommand command,
-			Func<IDataRecord, Dto> dbConverter
-		);
-		
 		protected abstract void ExecuteSync(
 			PostgresCommand command,
 			Action<NpgsqlCommand> action
@@ -246,11 +240,6 @@ namespace D2L.Services.Core.Postgres.Default {
 			}).SafeAsync();
 			return results;
 		}
-		
-		public abstract Task<IOnlineResultSet<Dto>> ExecReadOnlineAsync<Dto>(
-			PostgresCommand command,
-			Func<IDataRecord, Dto> dbConverter
-		);
 		
 		protected abstract Task ExecuteAsync(
 			PostgresCommand command,

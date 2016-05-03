@@ -1,5 +1,4 @@
-﻿using D2L.Services.Core.Postgres.Enumeration;
-using Npgsql;
+﻿using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -142,39 +141,11 @@ namespace D2L.Services.Core.Postgres {
 		/// <summary>
 		/// Execute a SQL command and return the result set. The entire result
 		/// set is immediately loaded into an <see cref="IReadOnlyList{Dto}"/>.
-		/// To load the results one by one, use the
-		/// <see cref="ExecReadOnline{Dto}"/> method instead.
 		/// </summary>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="dbConverter">A converter for the data record.</param>
 		/// <returns>The result set.</returns>
 		IReadOnlyList<Dto> ExecReadOffline<Dto>(
-			PostgresCommand command,
-			Func<IDataRecord,Dto> dbConverter
-		);
-		
-		/// <summary>
-		/// Execute a SQL command and return the result set. Records in the
-		/// result set are read one at a time as the
-		/// <see cref="IOnlineResultSet{Dto}"/> is enumerated, and the database
-		/// connection is held open until the result set is disposed, which is
-		/// done when it is fully enumerated or when <c>Dispose()</c> is called
-		/// explicitly.
-		/// 
-		/// When this method is called on an <see cref="IPostgresTransaction"/>,
-		/// the returned <see cref="IOnlineResultSet{Dto}"/> becomes responsible
-		/// for committing the transaction and closing the connection. No
-		/// further methods may be called on the transaction after calling
-		/// <c>ExecReadOnline</c>, and the underlying database connection and
-		/// transaction will not be closed when the
-		/// <see cref="IPostgresTransaction"/> is disposed. Instead, the
-		/// transaction is automatically commited once the
-		/// <see cref="IOnlineResultSet{Dto}"/> is disposed.
-		/// </summary>
-		/// <param name="command">The SQL command to execute.</param>
-		/// <param name="dbConverter">A converter for the data record.</param>
-		/// <returns>An iterator over the result set.</returns>
-		IOnlineResultSet<Dto> ExecReadOnline<Dto>(
 			PostgresCommand command,
 			Func<IDataRecord,Dto> dbConverter
 		);
@@ -268,39 +239,12 @@ namespace D2L.Services.Core.Postgres {
 		/// <summary>
 		/// Execute a SQL command and return the result set. The entire result
 		/// set is loaded into an <see cref="IReadOnlyList{Dto}"/> before the
-		/// task becomes completed. To read the results one by one, use the
-		/// <see cref="ExecReadOnlineAsync{Dto}"/> method instead.
+		/// task becomes completed.
 		/// </summary>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="dbConverter">A converter for the data record.</param>
 		/// <returns>The result set.</returns>
 		Task<IReadOnlyList<Dto>> ExecReadOfflineAsync<Dto>(
-			PostgresCommand command,
-			Func<IDataRecord,Dto> dbConverter
-		);
-		
-		/// <summary>
-		/// Execute a SQL command and return the result set. Records in the
-		/// result set are read one at a time as the
-		/// <see cref="IOnlineResultSet{Dto}"/> is enumerated, and the database
-		/// connection is held open until the result set is disposed, which is
-		/// done when it is fully enumerated or when <c>Dispose()</c> is called
-		/// explicitly.
-		/// 
-		/// When this method is called on an <see cref="IPostgresTransaction"/>,
-		/// the returned <see cref="IOnlineResultSet{Dto}"/> becomes responsible
-		/// for committing the transaction and closing the connection. No
-		/// further methods may be called on the transaction after calling
-		/// <c>ExecReadOnlineAsync</c>, and the underlying database connection
-		/// and transaction will not be closed when the
-		/// <see cref="IPostgresTransaction"/> is disposed. Instead, the
-		/// transaction is automatically commited once the
-		/// <see cref="IOnlineResultSet{Dto}"/> is disposed.
-		/// </summary>
-		/// <param name="command">The SQL command to execute.</param>
-		/// <param name="dbConverter">A converter for the data record.</param>
-		/// <returns>An iterator over the result set.</returns>
-		Task<IOnlineResultSet<Dto>> ExecReadOnlineAsync<Dto>(
 			PostgresCommand command,
 			Func<IDataRecord,Dto> dbConverter
 		);

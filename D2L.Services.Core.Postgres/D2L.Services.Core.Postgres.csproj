@@ -45,13 +45,6 @@
     <Compile Include="Default\PostgresDatabase.cs" />
     <Compile Include="Default\PostgresExecutorBase.cs" />
     <Compile Include="Default\PostgresTransaction.cs" />
-    <Compile Include="Enumeration\Default\PostgresResultSet.cs" />
-    <Compile Include="Enumeration\Default\PostgresResultSet.Enumerator.cs">
-      <DependentUpon>PostgresResultSet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Enumeration\IAsyncEnumerable.cs" />
-    <Compile Include="Enumeration\IAsyncEnumerator.cs" />
-    <Compile Include="Enumeration\IOnlineResultSet.cs" />
     <Compile Include="InternalExtensions.cs" />
     <Compile Include="IPostgresDatabase.cs" />
     <Compile Include="IPostgresExecutor.cs" />
@@ -65,8 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Default" />
-    <Folder Include="Enumeration" />
-    <Folder Include="Enumeration\Default" />
   </ItemGroup>
   <ItemGroup>
     <None Include="D2L.Services.Core.Postgres.nuspec" />
