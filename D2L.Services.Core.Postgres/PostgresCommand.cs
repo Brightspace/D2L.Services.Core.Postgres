@@ -11,6 +11,7 @@ namespace D2L.Services.Core.Postgres {
 	public sealed class PostgresCommand {
 		
 		private readonly List<NpgsqlParameter> m_parameters;
+		private int? m_timeout = null;
 		private string m_sql;
 		
 		/// <summary>
@@ -89,6 +90,18 @@ namespace D2L.Services.Core.Postgres {
 			m_parameters.Add( parameter );
 		}
 		
+		/// <summary>
+		/// The time to wait (in seconds) while trying to execute a command
+		/// before terminating the attempt and generating an error. Set to 0 for
+		/// no time limit. If <c>null</c>, the value of <c>CommandTimeout</c>
+		/// from the connection string is used (Defaults to 30 if not specified
+		/// in the connection string).
+		/// </summary>
+		public int? Timeout {
+			get { return m_timeout; }
+			set { m_timeout = value; }
+		}
+		
 		
 		internal NpgsqlCommand Build(
 			NpgsqlConnection connection,
@@ -98,6 +111,11 @@ namespace D2L.Services.Core.Postgres {
 			foreach( NpgsqlParameter parameter in m_parameters ) {
 				cmd.Parameters.Add( parameter );
 			}
+			
+			if( m_timeout.HasValue ) {
+				cmd.CommandTimeout = m_timeout.Value;
+			}
+			
 			return cmd;
 		}
 		
