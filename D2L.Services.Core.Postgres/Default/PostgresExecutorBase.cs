@@ -259,7 +259,7 @@ namespace D2L.Services.Core.Postgres.Default {
 		#endregion
 		
 		private T ConvertFromDb<T>( object dbValue ) {
-			//TODO[v1.1.0] add support for type converters
+			//TODO[v1.2.0] add support for type converters
 			if( dbValue is DBNull ) {
 				return (T)(object)null;
 			} else {

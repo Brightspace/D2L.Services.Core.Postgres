@@ -22,7 +22,7 @@ namespace D2L.Services.Core.Postgres {
 		/// </summary>
 		void Rollback();
 		
-		//TODO[v1.2.0] Add support for savepoints.
+		//TODO[v1.3.0] Add support for savepoints.
 		
 	}
 	

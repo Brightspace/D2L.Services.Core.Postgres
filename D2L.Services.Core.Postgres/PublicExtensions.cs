@@ -22,7 +22,7 @@ namespace D2L.Services.Core.Postgres {
 			this IDataRecord record,
 			string columnName
 		) {
-			//TODO[v1.1.0] add support for type converters
+			//TODO[v1.2.0] add support for type converters
 			int index = record.GetOrdinal( columnName );
 			if( record.IsDBNull( index ) ) {
 				return (T)(object)null;

@@ -120,7 +120,7 @@ namespace D2L.Services.Core.Postgres {
 		}
 		
 		private static object ToDbValue( object value ) {
-			//TODO[v1.1.0] add support for type converters
+			//TODO[v1.2.0] add support for type converters
 			if( value == null ) {
 				return DBNull.Value;
 			} else {

@@ -15,10 +15,14 @@ Not all features of this library have been fully tested. Wait for version 1.0.0 
 
 **Version 1.1**
 
+* Bring back support for reading a result set one row at a time (ExecReadOnline[Async])
+
+**Version 1.2**
+
 * Support for type converters
 * Support for adding IEnumerable parameters (not just Array and IList)
 
-**Version 1.2**
+**Version 1.3**
 
 * Support transaction savepoints
 * If possible, allow transactions to be marked as readonly/deferrable
