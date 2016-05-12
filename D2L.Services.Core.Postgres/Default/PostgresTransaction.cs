@@ -76,9 +76,21 @@ namespace D2L.Services.Core.Postgres.Default {
 			}
 		}
 		
+		//TODO[v2.0.0] When Npgsql 3.1 is released, use CommitAsync()
+		Task IPostgresTransaction.CommitAsync() {
+			((IPostgresTransaction)this).Commit();
+			return Task.WhenAll(); // Completed task with no result
+		}
+		
 		void IPostgresTransaction.Rollback() {
 			AssertIsOpen();
 			((IDisposable)this).Dispose();
+		}
+		
+		//TODO[v2.0.0] When Npgsql 3.1 is released, use RollbackAsync()
+		Task IPostgresTransaction.RollbackAsync() {
+			((IPostgresTransaction)this).Rollback();
+			return Task.WhenAll(); // Completed task with no result
 		}
 		
 		
