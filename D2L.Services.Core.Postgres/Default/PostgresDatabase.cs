@@ -12,33 +12,10 @@ namespace D2L.Services.Core.Postgres.Default {
 			m_connectionString = npgsqlConnectionString;
 		}
 		
-		IPostgresTransaction IPostgresDatabase.NewTransaction(
-			PostgresIsolationLevel isolationLevel
-		) {
-			return new PostgresTransaction( m_connectionString, isolationLevel );
-		}
-		
 		Task<IPostgresTransaction> IPostgresDatabase.NewTransactionAsync(
 			PostgresIsolationLevel isolationLevel
 		) {
 			return PostgresTransaction.ConstructAsync( m_connectionString, isolationLevel );
-		}
-		
-		protected override void ExecuteSync(
-			PostgresCommand command,
-			Action<NpgsqlCommand> action
-		) {
-			using( var connection = new NpgsqlConnection( m_connectionString ) ) {
-				connection.Open();
-				using( NpgsqlTransaction transaction = connection.BeginTransaction() ) {
-					using( NpgsqlCommand cmd = command.Build( connection, transaction ) ) {
-						action( cmd );
-						transaction.Commit();
-					}
-				}
-				// On an error, transaction.Rollback() is automatically done as
-				// part of the Dispose() call
-			}
 		}
 		
 		protected async override Task ExecuteAsync(

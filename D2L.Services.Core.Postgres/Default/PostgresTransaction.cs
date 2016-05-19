@@ -10,23 +10,6 @@ namespace D2L.Services.Core.Postgres.Default {
 		private readonly NpgsqlTransaction m_transaction;
 		private bool m_isDisposed = false;
 		
-		internal PostgresTransaction(
-			string connectionString,
-			PostgresIsolationLevel pgIsolationLevel
-		) {
-			try {
-				m_connection = new NpgsqlConnection( connectionString );
-				m_connection.Open();
-				m_transaction = m_connection.BeginTransaction(
-					pgIsolationLevel.ToAdoIsolationLevel()
-				);
-			} catch( Exception exception ) {
-				m_transaction.SafeDispose( ref exception );
-				m_connection.SafeDispose( ref exception );
-				throw exception;
-			}
-		}
-		
 		private PostgresTransaction(
 			NpgsqlConnection openConnection,
 			NpgsqlTransaction transaction
@@ -67,41 +50,22 @@ namespace D2L.Services.Core.Postgres.Default {
 			}
 		}
 		
-		void IPostgresTransaction.Commit() {
+		//TODO[v2.0.0] When Npgsql 3.1 is released, use CommitAsync()
+		Task IPostgresTransaction.CommitAsync() {
 			AssertIsOpen();
 			try {
 				m_transaction.Commit();
 			} finally {
 				((IDisposable)this).Dispose();
 			}
-		}
-		
-		//TODO[v2.0.0] When Npgsql 3.1 is released, use CommitAsync()
-		Task IPostgresTransaction.CommitAsync() {
-			((IPostgresTransaction)this).Commit();
 			return Task.WhenAll(); // Completed task with no result
-		}
-		
-		void IPostgresTransaction.Rollback() {
-			AssertIsOpen();
-			((IDisposable)this).Dispose();
 		}
 		
 		//TODO[v2.0.0] When Npgsql 3.1 is released, use RollbackAsync()
 		Task IPostgresTransaction.RollbackAsync() {
-			((IPostgresTransaction)this).Rollback();
-			return Task.WhenAll(); // Completed task with no result
-		}
-		
-		
-		protected override void ExecuteSync(
-			PostgresCommand command,
-			Action<NpgsqlCommand> action
-		) {
 			AssertIsOpen();
-			using( NpgsqlCommand cmd = command.Build( m_connection, m_transaction ) ) {
-				action( cmd );
-			}
+			((IDisposable)this).Dispose();
+			return Task.WhenAll(); // Completed task with no result
 		}
 		
 		protected async override Task ExecuteAsync(

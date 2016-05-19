@@ -14,17 +14,12 @@ namespace D2L.Services.Core.Postgres {
 		/// transaction is automatically rolled back if it is disposed before
 		/// <c>Commit()</c> is called.
 		/// </summary>
-		/// <param name="isolationLevel">The isolation level.</param>
-		/// <returns>The new transaction.</returns>
-		IPostgresTransaction NewTransaction(
-			PostgresIsolationLevel isolationLevel = PostgresIsolationLevel.ReadCommitted
-		);
-		
-		/// <summary>
-		/// Begins a new transaction with the given isolation level. The
-		/// transaction is automatically rolled back if it is disposed before
-		/// <c>Commit()</c> is called.
-		/// </summary>
+		/// <remarks>
+		/// If a rollback happens as a result of the transaction being disposed,
+		/// the rollback is performed synchronously. To enforce asynchronous
+		/// rollbacks, call <see cref="IPostgresTransaction.RollbackAsync"/>
+		/// on the transaction before disposing it.
+		/// </remarks>
 		/// <param name="isolationLevel">The isolation level.</param>
 		/// <returns>The new transaction.</returns>
 		Task<IPostgresTransaction> NewTransactionAsync(
