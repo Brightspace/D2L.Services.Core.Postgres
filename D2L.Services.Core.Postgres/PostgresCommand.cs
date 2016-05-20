@@ -105,7 +105,7 @@ namespace D2L.Services.Core.Postgres {
 		
 		internal NpgsqlCommand Build(
 			NpgsqlConnection connection,
-			NpgsqlTransaction transaction
+			NpgsqlTransaction transaction = null
 		) {
 			NpgsqlCommand cmd = new NpgsqlCommand( m_sql, connection, transaction );
 			foreach( NpgsqlParameter parameter in m_parameters ) {

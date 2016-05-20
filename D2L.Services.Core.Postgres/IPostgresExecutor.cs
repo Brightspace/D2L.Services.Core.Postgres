@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres {
@@ -18,8 +19,16 @@ namespace D2L.Services.Core.Postgres {
 		/// </summary>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <returns>The number of rows affected by the query.</returns>
+		/// <exception cref="PostgresException">
+		/// The SQL command raises an error. This exception is thrown when an
+		/// error is reported by the PostgreSQL backend. Other errors such as
+		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// The SQL command raises an error
+		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
+		/// For errors thrown by the PostgreSQL backend, a
+		/// <see cref="PostgresException"/> is thrown instead. To catch both
+		/// types of problems, catch type <see cref="DbException"/>.
 		/// </exception>
 		Task<int> ExecNonQueryAsync( PostgresCommand command );
 		
@@ -31,11 +40,19 @@ namespace D2L.Services.Core.Postgres {
 		/// <returns>
 		/// The first column of the first row of the result set.
 		/// </returns>
-		/// <exception cref="NpgsqlException">
-		/// The SQL command raises an error
-		/// </exception>
 		/// <exception cref="DataNotFoundException">
 		/// The result set is empty
+		/// </exception>
+		/// <exception cref="PostgresException">
+		/// The SQL command raises an error. This exception is thrown when an
+		/// error is reported by the PostgreSQL backend. Other errors such as
+		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// </exception>
+		/// <exception cref="NpgsqlException">
+		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
+		/// For errors thrown by the PostgreSQL backend, a
+		/// <see cref="PostgresException"/> is thrown instead. To catch both
+		/// types of problems, catch type <see cref="DbException"/>.
 		/// </exception>
 		Task<T> ExecReadScalarAsync<T>( PostgresCommand command );
 		
@@ -44,16 +61,24 @@ namespace D2L.Services.Core.Postgres {
 		/// of the result set. If the result set is empty, the given default
 		/// value is returned instead.
 		/// </summary>
-		/// <returns>
-		/// The first column of the first row of the result set, or
-		/// <paramref name="defaultValue"/> if there are no results.
-		/// </returns>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="defaultValue">
 		/// The value to return if the result set is empty
 		/// </param>
+		/// <returns>
+		/// The first column of the first row of the result set, or
+		/// <paramref name="defaultValue"/> if the result set is empty.
+		/// </returns>
+		/// <exception cref="PostgresException">
+		/// The SQL command raises an error. This exception is thrown when an
+		/// error is reported by the PostgreSQL backend. Other errors such as
+		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// The SQL command raises an error
+		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
+		/// For errors thrown by the PostgreSQL backend, a
+		/// <see cref="PostgresException"/> is thrown instead. To catch both
+		/// types of problems, catch type <see cref="DbException"/>.
 		/// </exception>
 		Task<T> ExecReadScalarOrDefaultAsync<T>(
 			PostgresCommand command,
@@ -64,14 +89,22 @@ namespace D2L.Services.Core.Postgres {
 		/// Execute a SQL command and return the first record in the result set.
 		/// Throws an exception if the result set is empty.
 		/// </summary>
-		/// <returns>The first record in the result set.</returns>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="dbConverter">A converter for the data record.</param>
-		/// <exception cref="NpgsqlException">
-		/// The SQL command raises an error
-		/// </exception>
+		/// <returns>The first record in the result set.</returns>
 		/// <exception cref="DataNotFoundException">
 		/// The result set is empty
+		/// </exception>
+		/// <exception cref="PostgresException">
+		/// The SQL command raises an error. This exception is thrown when an
+		/// error is reported by the PostgreSQL backend. Other errors such as
+		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// </exception>
+		/// <exception cref="NpgsqlException">
+		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
+		/// For errors thrown by the PostgreSQL backend, a
+		/// <see cref="PostgresException"/> is thrown instead. To catch both
+		/// types of problems, catch type <see cref="DbException"/>.
 		/// </exception>
 		Task<Dto> ExecReadFirstAsync<Dto>(
 			PostgresCommand command,
@@ -82,14 +115,25 @@ namespace D2L.Services.Core.Postgres {
 		/// Execute a SQL command and return the first record in the result set.
 		/// If the result set is empty, returns the given default value.
 		/// </summary>
-		/// <returns>The first record in the result set.</returns>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="dbConverter">A converter for the data record.</param>
 		/// <param name="defaultValue">
 		/// The default value to return if the result set is empty.
 		/// </param>
+		/// <returns>
+		/// The first record in the result set, or
+		/// <paramref name="defaultValue"/> if the result set is empty.
+		/// </returns>
+		/// <exception cref="PostgresException">
+		/// The SQL command raises an error. This exception is thrown when an
+		/// error is reported by the PostgreSQL backend. Other errors such as
+		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// The SQL command raises an error
+		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
+		/// For errors thrown by the PostgreSQL backend, a
+		/// <see cref="PostgresException"/> is thrown instead. To catch both
+		/// types of problems, catch type <see cref="DbException"/>.
 		/// </exception>
 		Task<Dto> ExecReadFirstOrDefaultAsync<Dto>(
 			PostgresCommand command,
@@ -105,6 +149,17 @@ namespace D2L.Services.Core.Postgres {
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="dbConverter">A converter for the data record.</param>
 		/// <returns>The result set.</returns>
+		/// <exception cref="PostgresException">
+		/// The SQL command raises an error. This exception is thrown when an
+		/// error is reported by the PostgreSQL backend. Other errors such as
+		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// </exception>
+		/// <exception cref="NpgsqlException">
+		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
+		/// For errors thrown by the PostgreSQL backend, a
+		/// <see cref="PostgresException"/> is thrown instead. To catch both
+		/// types of problems, catch type <see cref="DbException"/>.
+		/// </exception>
 		Task<IReadOnlyList<Dto>> ExecReadOfflineAsync<Dto>(
 			PostgresCommand command,
 			Func<IDataRecord,Dto> dbConverter

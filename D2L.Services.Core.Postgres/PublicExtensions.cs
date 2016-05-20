@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using System.ComponentModel;
+using Npgsql;
 using System;
 using System.Data;
 
@@ -7,6 +8,7 @@ namespace D2L.Services.Core.Postgres {
 	#pragma warning disable 1591
 	// Disable warning about no documentation for PostgresExtensionMethods class
 	
+	[EditorBrowsable( EditorBrowsableState.Never )]
 	public static class PostgresExtensionMethods {
 		
 		/// <summary>
@@ -35,9 +37,9 @@ namespace D2L.Services.Core.Postgres {
 		/// <param name="exception">The exception</param>
 		/// <returns>The error class of the Postgres error</returns>
 		public static PostgresErrorClass GetErrorClass(
-			this NpgsqlException exception
+			this PostgresException exception
 		) {
-			switch( exception.Code.Substring( 0, 2 ) ) {
+			switch( exception.SqlState.Substring( 0, 2 ) ) {
 				case "00": return PostgresErrorClass.SuccessfulCompletion;
 				case "01": return PostgresErrorClass.Warning;
 				case "02": return PostgresErrorClass.NoData;

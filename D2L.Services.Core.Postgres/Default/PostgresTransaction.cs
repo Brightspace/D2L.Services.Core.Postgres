@@ -26,10 +26,6 @@ namespace D2L.Services.Core.Postgres.Default {
 			NpgsqlTransaction transaction = null;
 			try {
 				connection = new NpgsqlConnection( connectionString );
-				// OpenAsync() is actually executed synchronously in the current
-				// version of Npgsql. We'll use OpenAsync() anyways in
-				// anticipation of a proper implementation being added in a
-				// future version of Npgsql.
 				await connection.OpenAsync().SafeAsync();
 				transaction = connection.BeginTransaction(
 					pgIsolationLevel.ToAdoIsolationLevel()
@@ -50,22 +46,46 @@ namespace D2L.Services.Core.Postgres.Default {
 			}
 		}
 		
-		//TODO[v2.0.0] When Npgsql 3.1 is released, use CommitAsync()
-		Task IPostgresTransaction.CommitAsync() {
+		async Task IPostgresTransaction.CommitAsync() {
+			AssertIsOpen();
+			
+			Exception commitException = null;
+			try {
+				await m_transaction.CommitAsync().SafeAsync();
+			} catch( Exception exception ) {
+				commitException = exception;
+			}
+			
+			try {
+				await ((IPostgresTransaction)this).DisposeAsync().SafeAsync();
+			} catch( Exception disposeException ) {
+				throw commitException ?? disposeException;
+			}
+			
+			if( commitException != null ) {
+				throw commitException;
+			}
+		}
+		
+		async Task IPostgresTransaction.RollbackAsync() {
 			AssertIsOpen();
 			try {
-				m_transaction.Commit();
+				await m_transaction.RollbackAsync().SafeAsync();
 			} finally {
 				((IDisposable)this).Dispose();
 			}
-			return Task.WhenAll(); // Completed task with no result
 		}
 		
-		//TODO[v2.0.0] When Npgsql 3.1 is released, use RollbackAsync()
-		Task IPostgresTransaction.RollbackAsync() {
-			AssertIsOpen();
-			((IDisposable)this).Dispose();
-			return Task.WhenAll(); // Completed task with no result
+		async Task IPostgresTransaction.DisposeAsync() {
+			if( !m_isDisposed ) {
+				try {
+					if( !m_transaction.IsCompleted ) {
+						await m_transaction.RollbackAsync().SafeAsync();
+					}
+				} finally {
+					((IDisposable)this).Dispose();
+				}
+			}
 		}
 		
 		protected async override Task ExecuteAsync(
