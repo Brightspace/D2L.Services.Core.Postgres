@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{82607D
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D2L.Services.Core.Postgres.Tests", "D2L.Services.Core.Postgres.Tests\D2L.Services.Core.Postgres.Tests.csproj", "{C29E4783-2BFC-42E1-B737-C7AC6AEE984A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{F5EF00B6-7C04-45D8-ABEE-01FA0B35B87F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5EF00B6-7C04-45D8-ABEE-01FA0B35B87F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5EF00B6-7C04-45D8-ABEE-01FA0B35B87F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C29E4783-2BFC-42E1-B737-C7AC6AEE984A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C29E4783-2BFC-42E1-B737-C7AC6AEE984A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C29E4783-2BFC-42E1-B737-C7AC6AEE984A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C29E4783-2BFC-42E1-B737-C7AC6AEE984A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

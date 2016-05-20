@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
-    <ProjectGuid>{F5EF00B6-7C04-45D8-ABEE-01FA0B35B87F}</ProjectGuid>
+    <ProjectGuid>{C29E4783-2BFC-42E1-B737-C7AC6AEE984A}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>D2L.Services.Core.Postgres</RootNamespace>
-    <AssemblyName>D2L.Services.Core.Postgres</AssemblyName>
+    <RootNamespace>D2L.Services.Core.Postgres.Tests</RootNamespace>
+    <AssemblyName>D2L.Services.Core.Postgres.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
@@ -16,10 +16,12 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>1591,1030</WarningsNotAsErrors>
+    <NoWarn>1591</NoWarn>
     <BaseIntermediateOutputPath>..\obj\</BaseIntermediateOutputPath>
     <OutputPath>..\build\output\</OutputPath>
-    <DocumentationFile>..\build\output\D2L.Services.Core.Postgres.xml</DocumentationFile>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>True</DebugSymbols>
@@ -28,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
     <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <DefineConstants>TRACE</DefineConstants>
@@ -36,43 +39,39 @@
     <Reference Include="D2L.Services.Core.Extensions">
       <HintPath>..\packages\D2L.Services.Core.Extensions.1.1.1.0\lib\net451\D2L.Services.Core.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="D2L.Services.Core.TestFramework">
+      <HintPath>..\packages\D2L.Services.Core.TestFramework.3.0.0\lib\net451\D2L.Services.Core.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\packages\Npgsql.3.1.1\lib\net451\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataNotFoundException.cs" />
-    <Compile Include="Default\PostgresDatabase.cs" />
-    <Compile Include="Default\PostgresExecutorBase.cs" />
-    <Compile Include="Default\PostgresTransaction.cs" />
-    <Compile Include="IDisposable.Extensions.cs" />
-    <Compile Include="IPostgresDatabase.cs" />
-    <Compile Include="IPostgresExecutor.cs" />
-    <Compile Include="IPostgresTransaction.cs" />
-    <Compile Include="PostgresCommand.cs" />
-    <Compile Include="PostgresDatabaseProvider.cs" />
-    <Compile Include="PostgresErrorClass.cs" />
-    <Compile Include="PostgresIsolationLevel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\FriendAssemblies.cs" />
-    <Compile Include="PublicExtensions.cs" />
+    <Folder Include="Integration" />
+    <Folder Include="Unit" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Default" />
+    <Compile Include="Integration\IntegrationTestFixtureBase.cs" />
+    <Compile Include="Unit\IDisposableExtensionsTests.cs" />
+    <Compile Include="Unit\PostgresCommandTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="D2L.Services.Core.Postgres.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\D2L.Services.Core.Postgres\D2L.Services.Core.Postgres.csproj">
+      <Project>{f5ef00b6-7c04-45d8-abee-01fa0b35b87f}</Project>
+      <Name>D2L.Services.Core.Postgres</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
 </Project>
