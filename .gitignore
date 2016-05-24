@@ -1,6 +1,5 @@
 /build
 /obj
 /packages
-/publish/*.nupkg
-/publish/publish-*.bat
+/D2L.Services.Core.Postgres/D2L.Services.Core.Postgres.*.nupkg
 NuGet.exe
