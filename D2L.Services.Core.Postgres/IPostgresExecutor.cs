@@ -22,13 +22,13 @@ namespace D2L.Services.Core.Postgres {
 		/// <exception cref="PostgresException">
 		/// The SQL command raises an error. This exception is thrown when an
 		/// error is reported by the PostgreSQL backend. Other errors such as
-		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// network issues result in an <see cref="NpgsqlException"/> instead,
+		/// which is a base class of this exception.
 		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
-		/// For errors thrown by the PostgreSQL backend, a
-		/// <see cref="PostgresException"/> is thrown instead. To catch both
-		/// types of problems, catch type <see cref="DbException"/>.
+		/// This exception is thrown when server-related issues occur.
+		/// PostgreSQL specific errors raise a <see cref="PostgresException"/>,
+		/// which is a subclass of this exception.
 		/// </exception>
 		Task<int> ExecNonQueryAsync( PostgresCommand command );
 		
@@ -46,13 +46,13 @@ namespace D2L.Services.Core.Postgres {
 		/// <exception cref="PostgresException">
 		/// The SQL command raises an error. This exception is thrown when an
 		/// error is reported by the PostgreSQL backend. Other errors such as
-		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// network issues result in an <see cref="NpgsqlException"/> instead,
+		/// which is a base class of this exception.
 		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
-		/// For errors thrown by the PostgreSQL backend, a
-		/// <see cref="PostgresException"/> is thrown instead. To catch both
-		/// types of problems, catch type <see cref="DbException"/>.
+		/// This exception is thrown when server-related issues occur.
+		/// PostgreSQL specific errors raise a <see cref="PostgresException"/>,
+		/// which is a subclass of this exception.
 		/// </exception>
 		Task<T> ExecReadScalarAsync<T>( PostgresCommand command );
 		
@@ -72,13 +72,13 @@ namespace D2L.Services.Core.Postgres {
 		/// <exception cref="PostgresException">
 		/// The SQL command raises an error. This exception is thrown when an
 		/// error is reported by the PostgreSQL backend. Other errors such as
-		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// network issues result in an <see cref="NpgsqlException"/> instead,
+		/// which is a base class of this exception.
 		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
-		/// For errors thrown by the PostgreSQL backend, a
-		/// <see cref="PostgresException"/> is thrown instead. To catch both
-		/// types of problems, catch type <see cref="DbException"/>.
+		/// This exception is thrown when server-related issues occur.
+		/// PostgreSQL specific errors raise a <see cref="PostgresException"/>,
+		/// which is a subclass of this exception.
 		/// </exception>
 		Task<T> ExecReadScalarOrDefaultAsync<T>(
 			PostgresCommand command,
@@ -98,13 +98,13 @@ namespace D2L.Services.Core.Postgres {
 		/// <exception cref="PostgresException">
 		/// The SQL command raises an error. This exception is thrown when an
 		/// error is reported by the PostgreSQL backend. Other errors such as
-		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// network issues result in an <see cref="NpgsqlException"/> instead,
+		/// which is a base class of this exception.
 		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
-		/// For errors thrown by the PostgreSQL backend, a
-		/// <see cref="PostgresException"/> is thrown instead. To catch both
-		/// types of problems, catch type <see cref="DbException"/>.
+		/// This exception is thrown when server-related issues occur.
+		/// PostgreSQL specific errors raise a <see cref="PostgresException"/>,
+		/// which is a subclass of this exception.
 		/// </exception>
 		Task<Dto> ExecReadFirstAsync<Dto>(
 			PostgresCommand command,
@@ -127,13 +127,13 @@ namespace D2L.Services.Core.Postgres {
 		/// <exception cref="PostgresException">
 		/// The SQL command raises an error. This exception is thrown when an
 		/// error is reported by the PostgreSQL backend. Other errors such as
-		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// network issues result in an <see cref="NpgsqlException"/> instead,
+		/// which is a base class of this exception.
 		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
-		/// For errors thrown by the PostgreSQL backend, a
-		/// <see cref="PostgresException"/> is thrown instead. To catch both
-		/// types of problems, catch type <see cref="DbException"/>.
+		/// This exception is thrown when server-related issues occur.
+		/// PostgreSQL specific errors raise a <see cref="PostgresException"/>,
+		/// which is a subclass of this exception.
 		/// </exception>
 		Task<Dto> ExecReadFirstOrDefaultAsync<Dto>(
 			PostgresCommand command,
@@ -152,13 +152,13 @@ namespace D2L.Services.Core.Postgres {
 		/// <exception cref="PostgresException">
 		/// The SQL command raises an error. This exception is thrown when an
 		/// error is reported by the PostgreSQL backend. Other errors such as
-		/// network issues result in an <see cref="NpgsqlException"/> instead.
+		/// network issues result in an <see cref="NpgsqlException"/> instead,
+		/// which is a base class of this exception.
 		/// </exception>
 		/// <exception cref="NpgsqlException">
-		/// An error unrelated to PostgreSQL occurs (eg. network disconnection).
-		/// For errors thrown by the PostgreSQL backend, a
-		/// <see cref="PostgresException"/> is thrown instead. To catch both
-		/// types of problems, catch type <see cref="DbException"/>.
+		/// This exception is thrown when server-related issues occur.
+		/// PostgreSQL specific errors raise a <see cref="PostgresException"/>,
+		/// which is a subclass of this exception.
 		/// </exception>
 		Task<IReadOnlyList<Dto>> ExecReadOfflineAsync<Dto>(
 			PostgresCommand command,
