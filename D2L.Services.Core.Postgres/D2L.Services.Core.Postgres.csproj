@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataNotFoundException.cs" />
+    <Compile Include="DbTypeConverter.cs" />
     <Compile Include="Default\PostgresDatabase.cs" />
     <Compile Include="Default\PostgresExecutorBase.cs" />
     <Compile Include="Default\PostgresTransaction.cs" />

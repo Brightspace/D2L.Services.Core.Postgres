@@ -33,7 +33,7 @@ namespace D2L.Services.Core.Postgres.Default {
 				);
 			}
 			
-			return ConvertFromDb<T>( result );
+			return DbTypeConverter.FromDbValue<T>( result );
 		}
 		
 		public async Task<T> ExecReadScalarOrDefaultAsync<T>(
@@ -49,7 +49,7 @@ namespace D2L.Services.Core.Postgres.Default {
 				return defaultValue;
 			}
 			
-			return ConvertFromDb<T>( result );
+			return DbTypeConverter.FromDbValue<T>( result );
 		}
 		
 		public async Task<Dto> ExecReadFirstAsync<Dto>(
@@ -106,14 +106,6 @@ namespace D2L.Services.Core.Postgres.Default {
 			Func<NpgsqlCommand,Task> action
 		);
 		
-		private T ConvertFromDb<T>( object dbValue ) {
-			//TODO[v1.2.0] add support for type converters
-			if( dbValue is DBNull ) {
-				return (T)(object)null;
-			} else {
-				return (T)dbValue;
-			}
-		}
 	}
 	
 }

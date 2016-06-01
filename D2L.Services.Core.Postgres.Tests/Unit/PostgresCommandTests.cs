@@ -31,6 +31,39 @@ namespace D2L.Services.Core.Postgres.Tests.Unit {
 			AssertHasParameter( builtCommand, "arg3", "{}", NpgsqlDbType.Jsonb );
 		}
 		
+		[Test]
+		public void DateTimeMappingTest() {
+			var cmd = new PostgresCommand();
+			
+			DateTime localTime = new DateTime( 1970, 1, 1, 0, 0, 0, DateTimeKind.Local );
+			DateTime utcTime = new DateTime( 1970, 1, 1, 0, 0, 0, DateTimeKind.Utc );
+			
+			cmd.AddParameter<DateTime>( "local1", localTime );
+			cmd.AddParameter<DateTime?>( "local2", (DateTime?)localTime );
+			cmd.AddParameter<DateTime>( "utc1", utcTime );
+			cmd.AddParameter<DateTime?>( "utc2", (DateTime?)utcTime );
+			cmd.AddParameter<DateTime?>( "nullTime", (DateTime?)null );
+			
+			NpgsqlConnection connection = new NpgsqlConnection();
+			NpgsqlCommand builtCommand = cmd.Build( connection );
+			
+			AssertHasParameter( builtCommand, "local1", localTime, NpgsqlDbType.TimestampTZ );
+			AssertHasParameter( builtCommand, "local2", localTime, NpgsqlDbType.TimestampTZ );
+			AssertHasParameter( builtCommand, "utc1", utcTime, NpgsqlDbType.Timestamp );
+			AssertHasParameter( builtCommand, "utc2", utcTime, NpgsqlDbType.Timestamp );
+			AssertHasParameter( builtCommand, "nullTime", DBNull.Value );
+		}
+		
+		[Test]
+		[ExpectedException( typeof( ArgumentException ) )]
+		public void AmbiguousDateTimeType_ExpectArgumentException() {
+			var cmd = new PostgresCommand();
+			cmd.AddParameter(
+				"arg1", 
+				new DateTime( 1970, 1, 1, 0, 0, 0, DateTimeKind.Unspecified )
+			);
+		}
+		
 		private static void AssertHasParameter(
 			NpgsqlCommand cmd,
 			string name,

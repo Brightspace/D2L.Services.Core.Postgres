@@ -24,13 +24,8 @@ namespace D2L.Services.Core.Postgres {
 			this IDataRecord record,
 			string columnName
 		) {
-			//TODO[v1.2.0] add support for type converters
 			int index = record.GetOrdinal( columnName );
-			if( record.IsDBNull( index ) ) {
-				return (T)(object)null;
-			} else {
-				return (T)record.GetValue( index );
-			}
+			return DbTypeConverter.FromDbValue<T>( record.GetValue( index ) );
 		}
 		
 		/// <summary>Gets the error class of a Postgres error.</summary>

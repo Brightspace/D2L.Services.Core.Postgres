@@ -64,9 +64,25 @@ namespace D2L.Services.Core.Postgres {
 		/// <param name="name">The name of the parameter.</param>
 		/// <param name="value">The value to use for the parameter.</param>
 		public void AddParameter<T>( string name, T value ) {
+			if( value is DateTime ) {
+				switch( ((DateTime)(object)value).Kind ) {
+					case DateTimeKind.Utc:
+						AddParameter<T>( name, value, NpgsqlDbType.Timestamp );
+						break;
+					case DateTimeKind.Local:
+						AddParameter<T>( name, value, NpgsqlDbType.TimestampTZ );
+						break;
+					default:
+						throw new ArgumentException(
+							message: "Cannot infer Postgres type from a DateTime of kind Unspecified.",
+							paramName: "value"
+						);
+				}
+			}
+			
 			var parameter = new NpgsqlParameter(
 				parameterName: name,
-				value: ToDbValue( value )
+				value: DbTypeConverter.ToDbValue( value )
 			);
 			
 			m_parameters.Add( parameter );
@@ -83,7 +99,7 @@ namespace D2L.Services.Core.Postgres {
 		public void AddParameter<T>( string name, T value, NpgsqlDbType dbType ) {
 			var parameter = new NpgsqlParameter(
 				parameterName: name,
-				value: ToDbValue( value )
+				value: DbTypeConverter.ToDbValue( value )
 			);
 			
 			parameter.NpgsqlDbType = dbType;
@@ -117,15 +133,6 @@ namespace D2L.Services.Core.Postgres {
 			}
 			
 			return cmd;
-		}
-		
-		private static object ToDbValue( object value ) {
-			//TODO[v1.2.0] add support for type converters
-			if( value == null ) {
-				return DBNull.Value;
-			} else {
-				return value;
-			}
 		}
 		
 	}
