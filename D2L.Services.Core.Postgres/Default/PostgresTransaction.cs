@@ -94,7 +94,20 @@ namespace D2L.Services.Core.Postgres.Default {
 		) {
 			AssertIsOpen();
 			using( NpgsqlCommand cmd = command.Build( m_connection, m_transaction ) ) {
-				await action( cmd ).SafeAsync();
+				Exception exception = null;
+				try {
+					await action( cmd ).SafeAsync();
+				} catch( Exception ex ) {
+					exception = ex;
+				}
+				
+				if( exception != null ) {
+					try {
+						await ((IPostgresTransaction)this).DisposeAsync().SafeAsync();
+					} finally {
+						throw exception;
+					}
+				}
 			}
 		}
 		
