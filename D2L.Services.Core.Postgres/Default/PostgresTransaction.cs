@@ -9,6 +9,7 @@ namespace D2L.Services.Core.Postgres.Default {
 		private readonly NpgsqlConnection m_connection;
 		private readonly NpgsqlTransaction m_transaction;
 		private bool m_isDisposed = false;
+		private bool m_hasCommitted = false;
 		
 		private PostgresTransaction(
 			NpgsqlConnection openConnection,
@@ -56,8 +57,13 @@ namespace D2L.Services.Core.Postgres.Default {
 				commitException = exception;
 			}
 			
+			IPostgresTransaction @this = this;
 			try {
-				await ((IPostgresTransaction)this).DisposeAsync().SafeAsync();
+				if( commitException != null ) {
+					await @this.RollbackAsync().SafeAsync();
+				} else {
+					@this.Dispose();
+				}
 			} catch( Exception disposeException ) {
 				throw commitException ?? disposeException;
 			}
@@ -65,19 +71,14 @@ namespace D2L.Services.Core.Postgres.Default {
 			if( commitException != null ) {
 				throw commitException;
 			}
+			
+			m_hasCommitted = true;
 		}
 		
 		async Task IPostgresTransaction.RollbackAsync() {
-			AssertIsOpen();
-			try {
-				await m_transaction.RollbackAsync().SafeAsync();
-			} finally {
-				((IDisposable)this).Dispose();
-			}
-		}
-		
-		async Task IPostgresTransaction.DisposeAsync() {
-			if( !m_isDisposed ) {
+			if( m_hasCommitted ) {
+				throw new ObjectDisposedException( "PostgresTransaction" );
+			} else if( !m_isDisposed ) {
 				try {
 					if( !m_transaction.IsCompleted ) {
 						await m_transaction.RollbackAsync().SafeAsync();
@@ -103,7 +104,7 @@ namespace D2L.Services.Core.Postgres.Default {
 				
 				if( exception != null ) {
 					try {
-						await ((IPostgresTransaction)this).DisposeAsync().SafeAsync();
+						await ((IPostgresTransaction)this).RollbackAsync().SafeAsync();
 					} finally {
 						throw exception;
 					}
