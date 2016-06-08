@@ -125,7 +125,7 @@ namespace D2L.Services.Core.Postgres {
 		) {
 			NpgsqlCommand cmd = new NpgsqlCommand( m_sql, connection, transaction );
 			foreach( NpgsqlParameter parameter in m_parameters ) {
-				cmd.Parameters.Add( parameter );
+				cmd.Parameters.Add( parameter.Clone() );
 			}
 			
 			if( m_timeout.HasValue ) {
