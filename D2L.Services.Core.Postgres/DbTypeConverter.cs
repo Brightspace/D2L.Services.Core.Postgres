@@ -4,7 +4,7 @@ namespace D2L.Services.Core.Postgres {
 	
 	internal static class DbTypeConverter {
 		
-		//TODO[v1.2.0] add support for type converters
+		//TODO[v1.1.0] add support for type converters
 		internal static object ToDbValue<T>( T value ) {
 			if( (object)value == null ) {
 				return DBNull.Value;
@@ -13,7 +13,7 @@ namespace D2L.Services.Core.Postgres {
 			}
 		}
 		
-		//TODO[v1.2.0] add support for type converters
+		//TODO[v1.1.0] add support for type converters
 		internal static T FromDbValue<T>( object dbValue ) {
 			if( dbValue is DBNull ) {
 				return (T)(object)null;

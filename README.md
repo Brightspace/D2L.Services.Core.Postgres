@@ -20,14 +20,12 @@ To package the library on your local machine for testing purposes, run **package
 
 **Version 1.1**
 
+* Support for automatic type converters
+
+**Version ??? (1.2?)**
+
 * Bring back support for reading a result set one row at a time (ExecReadOnline[Async])
 
-**Version 1.2**
+**Possible Future Work**
 
-* Support for type converters
-* Support for adding IEnumerable parameters (not just Array and IList)
-
-**Version 1.3**
-
-* Support transaction savepoints
-* If possible, allow transactions to be marked as readonly/deferrable
+Add support for transaction savepoints

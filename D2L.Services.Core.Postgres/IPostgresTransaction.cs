@@ -53,8 +53,6 @@ namespace D2L.Services.Core.Postgres {
 		/// </exception>
 		Task RollbackAsync();
 		
-		//TODO[v1.3.0] Add support for savepoints.
-		
 	}
 	
 }
