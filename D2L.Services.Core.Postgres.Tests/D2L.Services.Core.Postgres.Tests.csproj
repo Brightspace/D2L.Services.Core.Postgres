@@ -60,7 +60,10 @@
     <Folder Include="Unit" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Integration\DateTimeHandlingTests.cs" />
     <Compile Include="Integration\IntegrationTestFixtureBase.cs" />
+    <Compile Include="Integration\PostgresExecutorTests.cs" />
+    <Compile Include="Integration\PostgresTransactionTests.cs" />
     <Compile Include="Unit\IDisposableExtensionsTests.cs" />
     <Compile Include="Unit\PostgresCommandTests.cs" />
   </ItemGroup>
