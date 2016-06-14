@@ -1,14 +1,16 @@
-$projectDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-cd $projectDir
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+cd $scriptDir
 
-$solutionDir = (Get-Item ..).FullName
-$project = (Get-Item .).Name
+$project = "D2L.Services.Core.Postgres"
+
+$solutionDir = (Get-Item "$scriptDir\..").FullName
+$projectDir = "$solutionDir\$project"
 
 # Cleanup old packages
 rm *.nupkg 2> $nul
 
 # Get version number from AssemblyInfo.cs
-$assemblyInfo = Get-Content .\Properties\AssemblyInfo.cs
+$assemblyInfo = Get-Content "$projectDir\Properties\AssemblyInfo.cs"
 
 $regex = [Regex]"AssemblyVersion\(\s*""(\d+\.\d+\.\d+).*""\s*\)"
 $match = $regex.Match( $assemblyInfo )
@@ -23,7 +25,7 @@ if( !$match.Success ) {
 $version = $match.Groups[1].Value
 
 # Make NuGet package
-nuget pack "$project.csproj" -Version $version -Properties "Configuration=Release" -Build -NonInteractive
+nuget pack "$projectDir\$project.csproj" -Version $version -Properties "Configuration=Release" -Build -NonInteractive
 
 if( !$? ) {
 	Write-Host

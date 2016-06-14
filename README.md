@@ -16,7 +16,7 @@ number in **AssemblyInfo.cs** differs from the latest published version. (May ta
 Jenkins job can be found
 [here](http://prod.build.d2l/job/Dev/job/D2L.Services.Core/job/D2L.Services.Core.Postgres/job/BuildTestAndPublish/).)
 
-To package the library on your local machine for testing purposes, run **package.ps1** in the **D2L.Services.Core.Postgres** folder.
+To package the library on your local machine for testing purposes, run **LocalBuildAndPackage.ps1** in the **build** folder.
 
 ### TODO:
 

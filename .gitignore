@@ -1,5 +1,5 @@
-/build
+/build/output
 /obj
 /packages
-/D2L.Services.Core.Postgres/D2L.Services.Core.Postgres.*.nupkg
+/build/D2L.Services.Core.Postgres.*.nupkg
 NuGet.exe
