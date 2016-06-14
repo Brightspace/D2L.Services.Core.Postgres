@@ -59,7 +59,13 @@ namespace D2L.Services.Core.Postgres {
 		/// <summary>
 		/// Add a value to a parameter. To use parameters in your SQL query
 		/// string, prefix the parameter name in the SQL text with a colon. then
-		/// call this method using that parameter name (without the : prefix).
+		/// call this method with the parameter name (without the : prefix) and
+		/// value.
+		/// 
+		/// This method guesses the parameter's database type from its C# type.
+		/// For some types (eg. json), it is necessary to explicitly specify the
+		/// database type by using the form of this method that takes a database
+		/// type as a 3rd argument.
 		/// </summary>
 		/// <param name="name">The name of the parameter.</param>
 		/// <param name="value">The value to use for the parameter.</param>
@@ -91,7 +97,8 @@ namespace D2L.Services.Core.Postgres {
 		/// <summary>
 		/// Add a value to a parameter. To use parameters in your SQL query
 		/// string, prefix the parameter name in the SQL text with a colon. then
-		/// call this method using that parameter name (without the : prefix).
+		/// call this method with the parameter name (without the : prefix),
+		/// value, and database type.
 		/// </summary>
 		/// <param name="name">The name of the parameter.</param>
 		/// <param name="value">The value to use for the parameter.</param>

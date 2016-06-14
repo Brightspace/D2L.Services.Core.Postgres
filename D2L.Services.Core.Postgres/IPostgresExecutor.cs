@@ -34,7 +34,8 @@ namespace D2L.Services.Core.Postgres {
 		
 		/// <summary>
 		/// Execute a SQL command and return the first column of the first row
-		/// of the result set. Throws an exception if the result set is empty.
+		/// of the result set. Throws a <see cref="DataNotFoundException"/> if
+		/// the result set is empty.
 		/// </summary>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <returns>
@@ -58,8 +59,8 @@ namespace D2L.Services.Core.Postgres {
 		
 		/// <summary>
 		/// Execute a SQL command and return the first column of the first row
-		/// of the result set. If the result set is empty, the given default
-		/// value is returned instead.
+		/// of the result set. If the result set is empty, returns
+		/// <paramref name="defaultValue"/>.
 		/// </summary>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="defaultValue">
@@ -87,7 +88,8 @@ namespace D2L.Services.Core.Postgres {
 		
 		/// <summary>
 		/// Execute a SQL command and return the first record in the result set.
-		/// Throws an exception if the result set is empty.
+		/// Throws a <see cref="DataNotFoundException"/> if the result set is
+		/// empty.
 		/// </summary>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="dbConverter">A converter for the data record.</param>
@@ -113,7 +115,7 @@ namespace D2L.Services.Core.Postgres {
 		
 		/// <summary>
 		/// Execute a SQL command and return the first record in the result set.
-		/// If the result set is empty, returns the given default value.
+		/// If the result set is empty, returns <paramref name="defaultValue"/>.
 		/// </summary>
 		/// <param name="command">The SQL command to execute.</param>
 		/// <param name="dbConverter">A converter for the data record.</param>

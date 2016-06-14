@@ -16,8 +16,8 @@ namespace D2L.Services.Core.Postgres {
 	public static class PostgresExtensionMethods {
 		
 		/// <summary>
-		/// Read a field from the database record under the column with the
-		/// given name. Null values are automatically converted from
+		/// Read a field from the database record in the column with the given
+		/// name. Null values are automatically converted from
 		/// <c>DBNull.Value</c> to <c>null</c>.
 		/// </summary>
 		/// <param name="columnName">The name of the column to read</param>
@@ -60,8 +60,14 @@ namespace D2L.Services.Core.Postgres {
 			);
 		}
 		
-		/// <summary>Gets the error class of a Postgres error.</summary>
-		/// <returns>The error class of the Postgres error</returns>
+		/// <summary>
+		/// Gets the <see cref="PostgresErrorClass"/> of the current
+		/// <see cref="PostgresException"/>.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="PostgresErrorClass"/> of the current
+		/// <see cref="PostgresException"/>
+		/// </returns>
 		public static PostgresErrorClass GetErrorClass(
 			this PostgresException exception
 		) {

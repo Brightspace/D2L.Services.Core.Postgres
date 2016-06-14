@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace D2L.Services.Core.Postgres {
 	
 	/// <summary>
-	/// A class that represents a transaction to be made in a Postgres database.
+	/// The interface of a transaction against a Postgres database.
 	/// </summary>
 	/// <seealso cref="IPostgresDatabase"/>
 	public interface IPostgresTransaction : IPostgresExecutor, IDisposable {
