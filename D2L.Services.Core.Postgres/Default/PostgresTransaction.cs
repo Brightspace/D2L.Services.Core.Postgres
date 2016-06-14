@@ -58,20 +58,16 @@ namespace D2L.Services.Core.Postgres.Default {
 			}
 			
 			IPostgresTransaction @this = this;
-			try {
-				if( commitException != null ) {
-					await @this.RollbackAsync().SafeAsync();
-				} else {
-					@this.Dispose();
-				}
-			} catch( Exception disposeException ) {
-				throw commitException ?? disposeException;
-			}
-			
 			if( commitException != null ) {
+				try {
+					await @this.RollbackAsync().SafeAsync();
+				} catch( Exception rollbackException ) {
+					throw new AggregateException( commitException, rollbackException );
+				}
 				throw commitException;
 			}
 			
+			@this.Dispose();
 			m_hasCommitted = true;
 		}
 		
@@ -95,19 +91,20 @@ namespace D2L.Services.Core.Postgres.Default {
 		) {
 			AssertIsOpen();
 			using( NpgsqlCommand cmd = command.Build( m_connection, m_transaction ) ) {
-				Exception exception = null;
+				Exception commandException = null;
 				try {
 					await action( cmd ).SafeAsync();
 				} catch( Exception ex ) {
-					exception = ex;
+					commandException = ex;
 				}
 				
-				if( exception != null ) {
+				if( commandException != null ) {
 					try {
 						await ((IPostgresTransaction)this).RollbackAsync().SafeAsync();
-					} finally {
-						throw exception;
+					} catch( Exception rollbackException ) {
+						throw new AggregateException( commandException, rollbackException );
 					}
+					throw commandException;
 				}
 			}
 		}
