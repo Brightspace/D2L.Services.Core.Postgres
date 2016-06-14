@@ -74,10 +74,10 @@ namespace D2L.Services.Core.Postgres {
 				switch( ((DateTime)(object)value).Kind ) {
 					case DateTimeKind.Utc:
 						AddParameter<T>( name, value, NpgsqlDbType.Timestamp );
-						break;
+						return;
 					case DateTimeKind.Local:
 						AddParameter<T>( name, value, NpgsqlDbType.TimestampTZ );
-						break;
+						return;
 					default:
 						throw new ArgumentException(
 							message: "Cannot infer Postgres type from a DateTime of kind Unspecified.",
