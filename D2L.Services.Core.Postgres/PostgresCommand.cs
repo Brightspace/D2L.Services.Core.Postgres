@@ -10,7 +10,7 @@ namespace D2L.Services.Core.Postgres {
 	/// </summary>
 	public sealed class PostgresCommand {
 		
-		private readonly List<NpgsqlParameter> m_parameters;
+		private readonly List<NpgsqlParameter> m_parameters = new List<NpgsqlParameter>();
 		private int? m_timeout = null;
 		private string m_sql;
 		
@@ -20,7 +20,6 @@ namespace D2L.Services.Core.Postgres {
 		/// <param name="sql">The text of the query.</param>
 		public PostgresCommand( string sql ) {
 			m_sql = sql;
-			m_parameters = new List<NpgsqlParameter>();
 		}
 		
 		/// <summary>

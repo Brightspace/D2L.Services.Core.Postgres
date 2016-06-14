@@ -16,6 +16,7 @@ namespace D2L.Services.Core.Postgres.Default {
 			await ExecuteAsync( command, async cmd => {
 				rowsAffected = await cmd.ExecuteNonQueryAsync().SafeAsync();
 			}).SafeAsync();
+			
 			return rowsAffected;
 		}
 		
@@ -68,6 +69,7 @@ namespace D2L.Services.Core.Postgres.Default {
 					}
 				}
 			}).SafeAsync();
+			
 			return result;
 		}
 		
@@ -79,10 +81,13 @@ namespace D2L.Services.Core.Postgres.Default {
 			Dto result = defaultValue;
 			await ExecuteAsync( command, async cmd => {
 				using( DbDataReader reader = await cmd.ExecuteReaderAsync().SafeAsync() ) {
-					result = (await reader.ReadAsync().SafeAsync()) ?
-						dbConverter( reader ) : defaultValue;
+					result =
+						(await reader.ReadAsync().SafeAsync()) ?
+						dbConverter( reader ) :
+						defaultValue;
 				}
 			}).SafeAsync();
+			
 			return result;
 		}
 		
@@ -98,6 +103,7 @@ namespace D2L.Services.Core.Postgres.Default {
 					}
 				}
 			}).SafeAsync();
+			
 			return results;
 		}
 		

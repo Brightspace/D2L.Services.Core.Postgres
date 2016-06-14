@@ -11,14 +11,6 @@ namespace D2L.Services.Core.Postgres.Default {
 		private bool m_isDisposed = false;
 		private bool m_hasCommitted = false;
 		
-		private PostgresTransaction(
-			NpgsqlConnection openConnection,
-			NpgsqlTransaction transaction
-		) {
-			m_connection = openConnection;
-			m_transaction = transaction;
-		}
-		
 		internal async static Task<IPostgresTransaction> ConstructAsync(
 			string connectionString,
 			PostgresIsolationLevel pgIsolationLevel
@@ -37,6 +29,14 @@ namespace D2L.Services.Core.Postgres.Default {
 				connection.SafeDispose( ref exception );
 				throw exception;
 			}
+		}
+		
+		private PostgresTransaction(
+			NpgsqlConnection openConnection,
+			NpgsqlTransaction transaction
+		) {
+			m_connection = openConnection;
+			m_transaction = transaction;
 		}
 		
 		void IDisposable.Dispose() {
