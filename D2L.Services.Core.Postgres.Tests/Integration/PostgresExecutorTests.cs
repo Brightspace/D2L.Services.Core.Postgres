@@ -134,7 +134,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			PostgresCommand cmd;
 			Guid testId1 = Guid.NewGuid();
 			Guid testId2 = Guid.NewGuid();
-			const string TEST_COMMENT = "ExecReadScalarTest";
+			const string TEST_COMMENT = "ExecReadScalarOrDefaultTest";
 			const string DEFAULT_STRING = "NOT FOUND";
 			
 			cmd = new PostgresCommand( @"
@@ -183,7 +183,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			PostgresCommand cmd;
 			Guid testId1 = Guid.NewGuid();
 			Guid testId2 = Guid.NewGuid();
-			const string TEST_COMMENT = "ExecReadScalarTest";
+			const string TEST_COMMENT = "ExecReadFirstTest";
 			
 			cmd = new PostgresCommand( @"
 				INSERT INTO basic_table( id, comment ) VALUES( :id1, :comment1 );
@@ -227,6 +227,17 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 				).SafeAsync()
 			);
 			
+			cmd = new PostgresCommand( @"
+				SELECT id, comment FROM basic_table
+				ORDER BY comment ASC NULLS LAST"
+			);
+			await RunAsync(
+				async executor => fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
+			Assert.AreEqual( testId1, fetchedRecord.Id );
+			Assert.AreEqual( TEST_COMMENT, fetchedRecord.Comment );
+			
 		}
 		
 		[TestCase( false ), TestCase( true )]
@@ -234,7 +245,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			PostgresCommand cmd;
 			Guid testId1 = Guid.NewGuid();
 			Guid testId2 = Guid.NewGuid();
-			const string TEST_COMMENT = "ExecReadScalarTest";
+			const string TEST_COMMENT = "ExecReadFirstOrDefaultTest";
 			
 			cmd = new PostgresCommand( @"
 				INSERT INTO basic_table( id, comment ) VALUES( :id1, :comment1 );
@@ -297,7 +308,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			Guid testId1 = Guid.NewGuid();
 			Guid testId2 = Guid.NewGuid();
-			const string TEST_COMMENT = "ExecReadScalarTest";
+			const string TEST_COMMENT = "ExecReadOfflineTest";
 			
 			PostgresCommand insertCommand = new PostgresCommand( @"
 				INSERT INTO basic_table( id, comment ) VALUES( :id1, :comment1 );
@@ -337,7 +348,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			).SafeAsync();
 			CollectionAssert.IsEmpty( results );
 			
-			const string TEST_COMMENT = "ExecReadScalarTest";
+			const string TEST_COMMENT = "ExecReadColumnOfflineTest";
 			
 			PostgresCommand insertCommand = new PostgresCommand( @"
 				INSERT INTO basic_table( id, comment ) VALUES( :id1, :comment1 );
