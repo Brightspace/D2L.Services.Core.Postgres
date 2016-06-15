@@ -7,12 +7,12 @@ namespace D2L.Services.Core.Postgres {
 	
 	/// <summary>
 	/// Represents a SQL statement to execute against a PostgreSQL database.
-	/// </summary>
-	/// <remarks>
+	/// <para>
 	/// When executing a command that contains multiple semicolon-separated
 	/// statements, an error in any statement will cause the entire command to
 	/// be rolled back, even if it is not in an explicit transaction.
-	/// </remarks>
+	/// </para>
+	/// </summary>
 	/// <threadsafety instance="false" />
 	public sealed class PostgresCommand {
 		
