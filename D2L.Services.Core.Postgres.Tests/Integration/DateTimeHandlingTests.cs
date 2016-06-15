@@ -9,13 +9,21 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 	[TestFixture, Integration, RequiresDatabase]
 	internal sealed class DateTimeHandlingTests : IntegrationTestFixtureBase {
 		
-		private DateTime m_localTime;
-		private DateTime m_utcTime;
-		
 		private const string INSERT_SQL = @"
 			INSERT INTO datetime_table( local_timestamp, utc_timestamp )
 			VALUES( :local_time, :utc_time )
 			RETURNING id";
+		
+		private const string SELECT_LOCAL_SQL = @"
+			SELECT local_timestamp FROM datetime_table
+			WHERE id = :id";
+		
+		private const string SELECT_UTC_SQL = @"
+			SELECT utc_timestamp FROM datetime_table
+			WHERE id = :id";
+		
+		private DateTime m_localTime;
+		private DateTime m_utcTime;
 		
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp() {
@@ -44,19 +52,13 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			DateTime fetchedDateTime;
 			
-			cmd = new PostgresCommand( @"
-				SELECT utc_timestamp FROM datetime_table
-				WHERE id = :id"
-			);
+			cmd = new PostgresCommand( SELECT_UTC_SQL );
 			cmd.AddParameter<int>( "id", id );
 			fetchedDateTime = await m_database.ExecReadScalarAsync<DateTime>( cmd ).SafeAsync();
 			Assert.AreEqual( DateTimeKind.Utc, fetchedDateTime.Kind );
 			Assert.AreEqual( m_utcTime, fetchedDateTime );
 			
-			cmd = new PostgresCommand( @"
-				SELECT local_timestamp FROM datetime_table
-				WHERE id = :id"
-			);
+			cmd = new PostgresCommand( SELECT_LOCAL_SQL );
 			cmd.AddParameter<int>( "id", id );
 			fetchedDateTime = await m_database.ExecReadScalarAsync<DateTime>( cmd ).SafeAsync();
 			Assert.AreEqual( DateTimeKind.Local, fetchedDateTime.Kind );
@@ -64,7 +66,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		}
 		
 		[Test]
-		public async Task WriteAndRead_NullableDateTimeWithValue() {
+		public async Task WriteAndRead_NullableDateTime_WithValue() {
 			PostgresCommand cmd = new PostgresCommand( INSERT_SQL );
 			cmd.AddParameter<DateTime?>( "local_time", m_localTime );
 			cmd.AddParameter<DateTime?>( "utc_time", m_utcTime );
@@ -72,19 +74,13 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			DateTime? fetchedDateTime;
 			
-			cmd = new PostgresCommand( @"
-				SELECT utc_timestamp FROM datetime_table
-				WHERE id = :id"
-			);
+			cmd = new PostgresCommand( SELECT_UTC_SQL );
 			cmd.AddParameter<int>( "id", id );
 			fetchedDateTime = await m_database.ExecReadScalarAsync<DateTime?>( cmd ).SafeAsync();
 			Assert.AreEqual( DateTimeKind.Utc, fetchedDateTime.Value.Kind );
 			Assert.AreEqual( m_utcTime, fetchedDateTime.Value );
 			
-			cmd = new PostgresCommand( @"
-				SELECT local_timestamp FROM datetime_table
-				WHERE id = :id"
-			);
+			cmd = new PostgresCommand( SELECT_LOCAL_SQL );
 			cmd.AddParameter<int>( "id", id );
 			fetchedDateTime = await m_database.ExecReadScalarAsync<DateTime?>( cmd ).SafeAsync();
 			Assert.AreEqual( DateTimeKind.Local, fetchedDateTime.Value.Kind );
@@ -92,7 +88,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		}
 		
 		[Test]
-		public async Task WriteAndRead_NullDateTime() {
+		public async Task WriteAndRead_NullableDateTime_NullValue() {
 			PostgresCommand cmd = new PostgresCommand( INSERT_SQL );
 			cmd.AddParameter<DateTime?>( "local_time", null );
 			cmd.AddParameter<DateTime?>( "utc_time", null );
@@ -100,19 +96,13 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			DateTime? fetchedDateTime;
 			
-			cmd = new PostgresCommand( @"
-				SELECT utc_timestamp FROM datetime_table
-				WHERE id = :id"
-			);
+			cmd = new PostgresCommand( SELECT_UTC_SQL );
 			cmd.AddParameter<int>( "id", id );
 			fetchedDateTime = await m_database.ExecReadScalarAsync<DateTime?>( cmd ).SafeAsync();
 			Assert.IsFalse( fetchedDateTime.HasValue );
 			Assert.IsNull( fetchedDateTime );
 			
-			cmd = new PostgresCommand( @"
-				SELECT local_timestamp FROM datetime_table
-				WHERE id = :id"
-			);
+			cmd = new PostgresCommand( SELECT_LOCAL_SQL );
 			cmd.AddParameter<int>( "id", id );
 			fetchedDateTime = await m_database.ExecReadScalarAsync<DateTime?>( cmd ).SafeAsync();
 			Assert.IsFalse( fetchedDateTime.HasValue );
