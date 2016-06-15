@@ -7,6 +7,7 @@ namespace D2L.Services.Core.Postgres {
 	/// The interface of a Postgres database. Each command is executed in a new
 	/// connection.
 	/// </summary>
+	/// <threadsafety instance="true" />
 	public interface IPostgresDatabase : IPostgresExecutor {
 		
 		/// <summary>

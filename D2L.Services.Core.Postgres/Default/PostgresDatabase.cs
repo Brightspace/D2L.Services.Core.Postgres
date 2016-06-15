@@ -9,7 +9,7 @@ namespace D2L.Services.Core.Postgres.Default {
 		private readonly string m_connectionString;
 		
 		internal PostgresDatabase( string npgsqlConnectionString ) {
-			m_connectionString = npgsqlConnectionString;
+			m_connectionString = string.Copy( npgsqlConnectionString );
 		}
 		
 		Task<IPostgresTransaction> IPostgresDatabase.NewTransactionAsync(

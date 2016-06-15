@@ -73,7 +73,10 @@ namespace D2L.Services.Core.Postgres.Default {
 		
 		async Task IPostgresTransaction.RollbackAsync() {
 			if( m_hasCommitted ) {
-				throw new ObjectDisposedException( "PostgresTransaction" );
+				throw new InvalidOperationException(
+					"The transaction could not be rolled back because it has " +
+					"already been successfully committed."
+				);
 			} else if( !m_isDisposed ) {
 				try {
 					if( !m_transaction.IsCompleted ) {

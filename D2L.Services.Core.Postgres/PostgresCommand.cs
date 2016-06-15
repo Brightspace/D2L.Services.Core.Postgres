@@ -8,6 +8,7 @@ namespace D2L.Services.Core.Postgres {
 	/// <summary>
 	/// Represents a SQL statement to execute against a PostgreSQL database.
 	/// </summary>
+	/// <threadsafety instance="false" />
 	public sealed class PostgresCommand {
 		
 		private readonly List<NpgsqlParameter> m_parameters = new List<NpgsqlParameter>();
