@@ -53,9 +53,10 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			);
 			cmd.AddParameter<Guid>( "parameter", Guid.NewGuid() );
 			
-			await RunAsync( async executor => {
-				rowsAffected = await executor.ExecNonQueryAsync( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => rowsAffected = await executor.ExecNonQueryAsync( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			
 			Assert.AreEqual( 1, rowsAffected );
 			
@@ -64,15 +65,17 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 				"DELETE FROM basic_table"
 			);
 			
-			await RunAsync( async executor => {
-				rowsAffected = await executor.ExecNonQueryAsync( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => rowsAffected = await executor.ExecNonQueryAsync( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			
 			Assert.AreEqual( 1, rowsAffected );
 			
-			await RunAsync( async executor => {
-				rowsAffected = await executor.ExecNonQueryAsync( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => rowsAffected = await executor.ExecNonQueryAsync( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			
 			Assert.AreEqual( 0, rowsAffected );
 		}
@@ -101,24 +104,27 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId1 );
-			await RunAsync( async executor => {
-				fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( TEST_COMMENT, fetchedComment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId2 );
-			await RunAsync( async executor => {
-				fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.IsNull( fetchedComment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", Guid.NewGuid() );
 			Assert.Throws<DataNotFoundException>( async() =>
-				await RunAsync( async executor => {
-					fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync();
-				}, useTransaction ).SafeAsync()
+				await RunAsync(
+					async executor => fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync(),
+					useTransaction
+				).SafeAsync()
 			);
 			
 		}
@@ -148,23 +154,26 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId1 );
-			await RunAsync( async executor => {
-				fetchedComment = await executor.ExecReadScalarOrDefaultAsync<string>( cmd, DEFAULT_STRING ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedComment = await executor.ExecReadScalarOrDefaultAsync<string>( cmd, DEFAULT_STRING ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( TEST_COMMENT, fetchedComment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId2 );
-			await RunAsync( async executor => {
-				fetchedComment = await executor.ExecReadScalarOrDefaultAsync<string>( cmd, DEFAULT_STRING ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedComment = await executor.ExecReadScalarOrDefaultAsync<string>( cmd, DEFAULT_STRING ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.IsNull( fetchedComment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", Guid.NewGuid() );
-			await RunAsync( async executor => {
-				fetchedComment = await executor.ExecReadScalarOrDefaultAsync<string>( cmd, DEFAULT_STRING ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedComment = await executor.ExecReadScalarOrDefaultAsync<string>( cmd, DEFAULT_STRING ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( DEFAULT_STRING, fetchedComment );
 			
 		}
@@ -193,26 +202,29 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId1 );
-			await RunAsync( async executor => {
-				fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( testId1, fetchedRecord.Id );
 			Assert.AreEqual( TEST_COMMENT, fetchedRecord.Comment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId2 );
-			await RunAsync( async executor => {
-				fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( testId2, fetchedRecord.Id );
 			Assert.IsNull( fetchedRecord.Comment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", Guid.NewGuid() );
 			Assert.Throws<DataNotFoundException>( async() =>
-				await RunAsync( async executor => {
-					fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync();
-				}, useTransaction ).SafeAsync()
+				await RunAsync(
+					async executor => fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync(),
+					useTransaction
+				).SafeAsync()
 			);
 			
 		}
@@ -241,25 +253,28 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId1 );
-			await RunAsync( async executor => {
-				fetchedRecord = await executor.ExecReadFirstOrDefaultAsync<TestRecord>( cmd, TestRecord.DbConverter, null ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedRecord = await executor.ExecReadFirstOrDefaultAsync<TestRecord>( cmd, TestRecord.DbConverter, null ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( testId1, fetchedRecord.Id );
 			Assert.AreEqual( TEST_COMMENT, fetchedRecord.Comment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", testId2 );
-			await RunAsync( async executor => {
-				fetchedRecord = await executor.ExecReadFirstOrDefaultAsync<TestRecord>( cmd, TestRecord.DbConverter, null ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedRecord = await executor.ExecReadFirstOrDefaultAsync<TestRecord>( cmd, TestRecord.DbConverter, null ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( testId2, fetchedRecord.Id );
 			Assert.IsNull( fetchedRecord.Comment );
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", Guid.NewGuid() );
-			await RunAsync( async executor => {
-				fetchedRecord = await executor.ExecReadFirstOrDefaultAsync<TestRecord>( cmd, TestRecord.DbConverter, null ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedRecord = await executor.ExecReadFirstOrDefaultAsync<TestRecord>( cmd, TestRecord.DbConverter, null ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.IsNull( fetchedRecord );
 			
 		}
@@ -271,12 +286,13 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 				"SELECT id, comment FROM basic_table"
 			);
 			
-			await RunAsync( async executor => {
-				results = await executor.ExecReadOfflineAsync<TestRecord>(
+			await RunAsync(
+				async executor => results = await executor.ExecReadOfflineAsync<TestRecord>(
 					selectCommand,
 					TestRecord.DbConverter
-				).SafeAsync();
-			}, useTransaction ).SafeAsync();
+				).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			CollectionAssert.IsEmpty( results );
 			
 			Guid testId1 = Guid.NewGuid();
@@ -292,12 +308,13 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			insertCommand.AddParameter<Guid>( "id2", testId2 );
 			Assert.AreEqual( 2, await m_database.ExecNonQueryAsync( insertCommand ).SafeAsync() );
 			
-			await RunAsync( async executor => {
-				results = await executor.ExecReadOfflineAsync<TestRecord>(
+			await RunAsync(
+				async executor => results = await executor.ExecReadOfflineAsync<TestRecord>(
 					selectCommand,
 					TestRecord.DbConverter
-				).SafeAsync();
-			}, useTransaction ).SafeAsync();
+				).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			CollectionAssert.AreEquivalent(
 				new[]{
 					new TestRecord( testId1, TEST_COMMENT ),
@@ -314,9 +331,10 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 				"SELECT comment FROM basic_table"
 			);
 			
-			await RunAsync( async executor => {
-				results = await executor.ExecReadColumnOfflineAsync<string>( selectCommand ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => results = await executor.ExecReadColumnOfflineAsync<string>( selectCommand ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			CollectionAssert.IsEmpty( results );
 			
 			const string TEST_COMMENT = "ExecReadScalarTest";
@@ -330,9 +348,10 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			insertCommand.AddParameter<Guid>( "id2", Guid.NewGuid() );
 			Assert.AreEqual( 2, await m_database.ExecNonQueryAsync( insertCommand ).SafeAsync() );
 			
-			await RunAsync( async executor => {
-				results = await executor.ExecReadColumnOfflineAsync<string>( selectCommand ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => results = await executor.ExecReadColumnOfflineAsync<string>( selectCommand ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			CollectionAssert.AreEquivalent(
 				new[]{ TEST_COMMENT, null },
 				results
@@ -351,9 +370,10 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			cmd.AddParameter<string>( "comment", null );
 			
 			int rowsAdded = 0;
-			await RunAsync( async executor => {
-				rowsAdded = await executor.ExecNonQueryAsync( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => rowsAdded = await executor.ExecNonQueryAsync( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.AreEqual( 1, rowsAdded );
 			
 			
@@ -364,9 +384,10 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			cmd.AddParameter<Guid>( "id", testId );
 			
 			string fetchedComment = string.Empty;
-			await RunAsync( async executor => {
-				fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			Assert.IsNull( fetchedComment );
 			
 		}
@@ -415,9 +436,10 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			cmd.AddParameter<Guid>( "id", id );
 			
 			long numRows = 0;
-			await RunAsync( async executor => {
-				numRows = await executor.ExecReadScalarAsync<long>( cmd ).SafeAsync();
-			}, useTransaction ).SafeAsync();
+			await RunAsync(
+				async executor => numRows = await executor.ExecReadScalarAsync<long>( cmd ).SafeAsync(),
+				useTransaction
+			).SafeAsync();
 			
 			Assert.AreEqual( 0, numRows );
 			
