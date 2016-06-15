@@ -13,9 +13,14 @@ namespace D2L.Services.Core.Postgres {
 		
 		/// <summary>
 		/// Commit the transaction and close the connection. If the commit
-		/// fails, then the transaction will be rolled back. After this call,
-		/// the transaction will necessarily be disposed and the connection will
-		/// be closed.
+		/// fails, then the transaction will be rolled back.
+		/// <para>
+		/// PRECONDITION: The transaction has not yet been disposed.
+		/// </para>
+		/// <para>
+		/// POSTCONDITION: The transaction is disposed, and the connection is
+		/// closed.
+		/// </para>
 		/// </summary>
 		/// <exception cref="PostgresException">
 		/// The commit raises an error. This exception is thrown when an error
@@ -36,13 +41,16 @@ namespace D2L.Services.Core.Postgres {
 		Task CommitAsync();
 		
 		/// <summary>
-		/// Rollback the transaction and close the connection. After this call,
-		/// the transaction will necessarily be disposed and the connection will
-		/// be closed. It is safe to call this method on a transaction which has
-		/// already been rolled back (in which case, this call is a NOP);
-		/// however, calling this method on a transaction that has successfully
-		/// committed is an error and will result in an
-		/// <see cref="InvalidOperationException"/> being thrown.
+		/// Rollback the transaction and close the connection. It is safe to
+		/// call this method on a transaction which has already been rolled back
+		/// (in which case, this call is a NOP).
+		/// <para>
+		/// PRECONDITION: The transaction has not been (successfully) committed
+		/// </para>
+		/// <para>
+		/// POSTCONDITION: The transaction is disposed, and the connection is
+		/// closed.
+		/// </para>
 		/// </summary>
 		/// <exception cref="PostgresException">
 		/// The rollback raises an error. This exception is thrown when an error

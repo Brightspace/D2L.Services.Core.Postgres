@@ -58,7 +58,7 @@ namespace D2L.Services.Core.Postgres {
 		
 		/// <summary>
 		/// Add a value to a parameter. To use parameters in your SQL query
-		/// string, prefix the parameter name in the SQL text with a colon. then
+		/// string, prefix the parameter name in the SQL text with a colon, then
 		/// call this method with the parameter name (without the : prefix) and
 		/// value.
 		/// 
@@ -96,7 +96,7 @@ namespace D2L.Services.Core.Postgres {
 		
 		/// <summary>
 		/// Add a value to a parameter. To use parameters in your SQL query
-		/// string, prefix the parameter name in the SQL text with a colon. then
+		/// string, prefix the parameter name in the SQL text with a colon, then
 		/// call this method with the parameter name (without the : prefix),
 		/// value, and database type.
 		/// </summary>
