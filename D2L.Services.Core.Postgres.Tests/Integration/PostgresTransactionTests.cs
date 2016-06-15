@@ -85,7 +85,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		private async Task RunTransactionAsync( Guid initialId ) {
 			PostgresCommand cmd;
 			using( IPostgresTransaction transaction =
-				await m_database.NewTransactionAsync( PostgresIsolationLevel.Serializable ).SafeAsync()
+				await m_database.NewTransactionAsync( PostgresIsolationLevel.RepeatableRead ).SafeAsync()
 			) {
 				cmd = new PostgresCommand( @"
 					SELECT * FROM basic_table
