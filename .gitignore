@@ -3,3 +3,5 @@
 /packages
 /build/D2L.Services.Core.Postgres.*.nupkg
 NuGet.exe
+D2L.Services.Core.Postgres.shfbproj
+/Help
