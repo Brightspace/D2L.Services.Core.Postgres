@@ -1,20 +1,25 @@
-﻿using Npgsql;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using Npgsql;
 using System;
 using System.Data;
 
 namespace D2L.Services.Core.Postgres {
 	
+	// Disable warnings about no documentation for 'this' parameters and the
+	// PostgresExtensionMethods class itself
 	#pragma warning disable 1591
-	// Disable warning about no documentation for PostgresExtensionMethods class
+	#pragma warning disable 1573
 	
+	[EditorBrowsable( EditorBrowsableState.Never )]
 	public static class PostgresExtensionMethods {
 		
 		/// <summary>
-		/// Read a field from the database record under the column with the
-		/// given name. Null values are automatically converted from
+		/// Read a field from the database record in the column with the given
+		/// name. Null values are automatically converted from
 		/// <c>DBNull.Value</c> to <c>null</c>.
 		/// </summary>
-		/// <param name="record">The database data record</param>
 		/// <param name="columnName">The name of the column to read</param>
 		/// <typeparam name="T">The C# data type of the field</typeparam>
 		/// <returns>The value of the field</returns>
@@ -22,22 +27,51 @@ namespace D2L.Services.Core.Postgres {
 			this IDataRecord record,
 			string columnName
 		) {
-			//TODO[v1.1.0] add support for type converters
 			int index = record.GetOrdinal( columnName );
-			if( record.IsDBNull( index ) ) {
-				return (T)(object)null;
-			} else {
-				return (T)record.GetValue( index );
-			}
+			return DbTypeConverter.FromDbValue<T>( record.GetValue( index ) );
 		}
 		
-		/// <summary>Gets the error class of a Postgres error.</summary>
-		/// <param name="exception">The exception</param>
-		/// <returns>The error class of the Postgres error</returns>
-		public static PostgresErrorClass GetErrorClass(
-			this NpgsqlException exception
+		/// <summary>
+		/// Execute a SQL command and return the first column of the result set.
+		/// The entire column is loaded into an <see cref="IReadOnlyList{T}"/>
+		/// before the task becomes completed. Intended to be used for queries
+		/// whose result set contains exactly one column.
+		/// </summary>
+		/// <param name="command">The SQL command to execute.</param>
+		/// <returns>The first column of the result set.</returns>
+		/// <exception cref="PostgresException">
+		/// The SQL command raises an error. This exception is thrown when an
+		/// error is reported by the PostgreSQL backend. Other errors such as
+		/// network issues result in an <see cref="NpgsqlException"/> instead,
+		/// which is a base class of this exception.
+		/// </exception>
+		/// <exception cref="NpgsqlException">
+		/// This exception is thrown when server-related issues occur.
+		/// PostgreSQL specific errors raise a <see cref="PostgresException"/>,
+		/// which is a subclass of this exception.
+		/// </exception>
+		public static Task<IReadOnlyList<T>> ExecReadColumnOfflineAsync<T>(
+			this IPostgresExecutor database,
+			PostgresCommand command
 		) {
-			switch( exception.Code.Substring( 0, 2 ) ) {
+			return database.ExecReadOfflineAsync<T>(
+				command,
+				record => DbTypeConverter.FromDbValue<T>( record.GetValue( 0 ) )
+			);
+		}
+		
+		/// <summary>
+		/// Gets the <see cref="PostgresErrorClass"/> of the current
+		/// <see cref="PostgresException"/>.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="PostgresErrorClass"/> of the current
+		/// <see cref="PostgresException"/>
+		/// </returns>
+		public static PostgresErrorClass GetErrorClass(
+			this PostgresException exception
+		) {
+			switch( exception.SqlState.Substring( 0, 2 ) ) {
 				case "00": return PostgresErrorClass.SuccessfulCompletion;
 				case "01": return PostgresErrorClass.Warning;
 				case "02": return PostgresErrorClass.NoData;
@@ -86,6 +120,7 @@ namespace D2L.Services.Core.Postgres {
 		
 	}
 	
+	#pragma warning restore 1573
 	#pragma warning restore 1591
 	
 }

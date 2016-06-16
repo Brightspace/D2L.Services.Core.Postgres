@@ -2,7 +2,7 @@
 <package>
 	<metadata>
 		<id>$id$</id>
-		<title>$id$</title>
+		<title>$title$</title>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
 		<projectUrl>https://git.dev.d2l/projects/D2LSER/repos/d2l.services.core.postgres</projectUrl>

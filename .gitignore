@@ -1,6 +1,10 @@
-/build
+/build/output
 /obj
 /packages
-/publish/*.nupkg
-/publish/publish-*.bat
+/build/D2L.Services.Core.Postgres.*.nupkg
 NuGet.exe
+/D2L.Services.Core.Postgres.userprefs
+/.vs
+*.suo
+/D2L.Services.Core.Postgres.Tests/OpenCover
+/doc

@@ -6,6 +6,7 @@ namespace D2L.Services.Core.Postgres {
 	/// <summary>
 	/// A factory used to create an <see cref="IPostgresDatabase"/>.
 	/// </summary>
+	/// <threadsafety static="true" />
 	public static class PostgresDatabaseProvider {
 		
 		/// <summary>

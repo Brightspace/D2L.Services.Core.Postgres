@@ -1,8 +1,5 @@
-﻿using D2L.Services.Core.Postgres.Enumeration;
-using D2L.Services.Core.Postgres.Enumeration.Default;
-using Npgsql;
+﻿using Npgsql;
 using System;
-using System.Data;
 using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres.Default {
@@ -12,35 +9,7 @@ namespace D2L.Services.Core.Postgres.Default {
 		private readonly NpgsqlConnection m_connection;
 		private readonly NpgsqlTransaction m_transaction;
 		private bool m_isDisposed = false;
-		
-		// Whether or not the PostgresTransaction is responsible for ending the
-		// transaction and closing the connection when disposed.
-		private bool m_isResponsible = true;
-		
-		internal PostgresTransaction(
-			string connectionString,
-			PostgresIsolationLevel pgIsolationLevel
-		) {
-			try {
-				m_connection = new NpgsqlConnection( connectionString );
-				m_connection.Open();
-				m_transaction = m_connection.BeginTransaction(
-					pgIsolationLevel.ToAdoIsolationLevel()
-				);
-			} catch( Exception exception ) {
-				m_transaction.SafeDispose( ref exception );
-				m_connection.SafeDispose( ref exception );
-				throw exception;
-			}
-		}
-		
-		private PostgresTransaction(
-			NpgsqlConnection openConnection,
-			NpgsqlTransaction transaction
-		) {
-			m_connection = openConnection;
-			m_transaction = transaction;
-		}
+		private bool m_hasCommitted = false;
 		
 		internal async static Task<IPostgresTransaction> ConstructAsync(
 			string connectionString,
@@ -50,10 +19,6 @@ namespace D2L.Services.Core.Postgres.Default {
 			NpgsqlTransaction transaction = null;
 			try {
 				connection = new NpgsqlConnection( connectionString );
-				// OpenAsync() is actually executed synchronously in the current
-				// version of Npgsql. We'll use OpenAsync() anyways in
-				// anticipation of a proper implementation being added in a
-				// future version of Npgsql.
 				await connection.OpenAsync().SafeAsync();
 				transaction = connection.BeginTransaction(
 					pgIsolationLevel.ToAdoIsolationLevel()
@@ -66,36 +31,60 @@ namespace D2L.Services.Core.Postgres.Default {
 			}
 		}
 		
+		private PostgresTransaction(
+			NpgsqlConnection openConnection,
+			NpgsqlTransaction transaction
+		) {
+			m_connection = openConnection;
+			m_transaction = transaction;
+		}
+		
 		void IDisposable.Dispose() {
-			if( m_isResponsible && !m_isDisposed ) {
+			if( !m_isDisposed ) {
 				m_isDisposed = true;
 				m_transaction.SafeDispose();
 				m_connection.SafeDispose();
 			}
 		}
 		
-		void IPostgresTransaction.Commit() {
-			AssertIsOpenAndResponsible();
+		async Task IPostgresTransaction.CommitAsync() {
+			AssertIsOpen();
+			
+			Exception commitException = null;
 			try {
-				m_transaction.Commit();
-			} finally {
-				((IDisposable)this).Dispose();
+				await m_transaction.CommitAsync().SafeAsync();
+			} catch( Exception exception ) {
+				commitException = exception;
 			}
+			
+			IPostgresTransaction @this = this;
+			if( commitException != null ) {
+				try {
+					await @this.RollbackAsync().SafeAsync();
+				} catch( Exception rollbackException ) {
+					throw new AggregateException( commitException, rollbackException );
+				}
+				throw commitException;
+			}
+			
+			@this.Dispose();
+			m_hasCommitted = true;
 		}
 		
-		void IPostgresTransaction.Rollback() {
-			AssertIsOpenAndResponsible();
-			((IDisposable)this).Dispose();
-		}
-		
-		
-		protected override void ExecuteSync(
-			PostgresCommand command,
-			Action<NpgsqlCommand> action
-		) {
-			AssertIsOpenAndResponsible();
-			using( NpgsqlCommand cmd = command.Build( m_connection, m_transaction ) ) {
-				action( cmd );
+		async Task IPostgresTransaction.RollbackAsync() {
+			if( m_hasCommitted ) {
+				throw new InvalidOperationException(
+					"The transaction could not be rolled back because it has " +
+					"already been successfully committed."
+				);
+			} else if( !m_isDisposed ) {
+				try {
+					if( !m_transaction.IsCompleted ) {
+						await m_transaction.RollbackAsync().SafeAsync();
+					}
+				} finally {
+					((IDisposable)this).Dispose();
+				}
 			}
 		}
 		
@@ -103,75 +92,29 @@ namespace D2L.Services.Core.Postgres.Default {
 			PostgresCommand command,
 			Func<NpgsqlCommand,Task> action
 		) {
-			AssertIsOpenAndResponsible();
+			AssertIsOpen();
 			using( NpgsqlCommand cmd = command.Build( m_connection, m_transaction ) ) {
-				await action( cmd ).SafeAsync();
-			}
-		}
-		
-		
-		public override IOnlineResultSet<Dto> ExecReadOnline<Dto>(
-			PostgresCommand command,
-			Func<IDataRecord, Dto> dbConverter
-		) {
-			AssertIsOpenAndResponsible();
-			
-			NpgsqlCommand cmd = null;
-			try {
-				cmd = command.Build( m_connection, m_transaction );
+				Exception commandException = null;
+				try {
+					await action( cmd ).SafeAsync();
+				} catch( Exception ex ) {
+					commandException = ex;
+				}
 				
-				// The PostgresResultSet is now responsible for disposing the
-				// data reader, command, transaction, and connection
-				m_isResponsible = false;
-				return new PostgresResultSet<Dto>(
-					reader: cmd.ExecuteReader(),
-					command: cmd,
-					dbConverter: dbConverter
-				);
-			} catch( Exception exception ) {
-				cmd.SafeDispose( ref exception );
-				m_transaction.SafeDispose( ref exception );
-				m_connection.SafeDispose( ref exception );
-				m_isDisposed = true;
-				throw exception;
-			}
-			
-		}
-		
-		public async override Task<IOnlineResultSet<Dto>> ExecReadOnlineAsync<Dto>(
-			PostgresCommand command,
-			Func<IDataRecord, Dto> dbConverter
-		) {
-			AssertIsOpenAndResponsible();
-			
-			NpgsqlCommand cmd = null;
-			try {
-				cmd = command.Build( m_connection, m_transaction );
-				
-				// The PostgresResultSet is now responsible for disposing the
-				// data reader, transaction, and connection
-				m_isResponsible = false;
-				return new PostgresResultSet<Dto>(
-					reader: await cmd.ExecuteReaderAsync().SafeAsync(),
-					command: cmd,
-					dbConverter: dbConverter
-				);
-			} catch( Exception exception ) {
-				cmd.SafeDispose( ref exception );
-				m_transaction.SafeDispose( ref exception );
-				m_connection.SafeDispose( ref exception );
-				m_isDisposed = true;
-				throw exception;
+				if( commandException != null ) {
+					try {
+						await ((IPostgresTransaction)this).RollbackAsync().SafeAsync();
+					} catch( Exception rollbackException ) {
+						throw new AggregateException( commandException, rollbackException );
+					}
+					throw commandException;
+				}
 			}
 		}
 		
-		private void AssertIsOpenAndResponsible() {
-			if( !m_isResponsible ) {
-				throw new InvalidOperationException(
-					"You may not invoke methods on an IPostgresTransaction " +
-					"after calling ExecReadOnline() or ExecReadOnlineAsync()."
-				);
-			} else if( m_isDisposed ) {
+		
+		private void AssertIsOpen() {
+			if( m_isDisposed ) {
 				throw new ObjectDisposedException( "PostgresTransaction" );
 			}
 		}
