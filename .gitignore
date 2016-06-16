@@ -3,9 +3,8 @@
 /packages
 /build/D2L.Services.Core.Postgres.*.nupkg
 NuGet.exe
-/Help
 /D2L.Services.Core.Postgres.userprefs
-/D2L.Services.Core.Postgres.shfbproj
 /.vs
 *.suo
 /D2L.Services.Core.Postgres.Tests/OpenCover
+/doc
