@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using D2L.Services.Core.Postgres.TypeConverters;
 using Npgsql;
 using System;
 using System.Data;
@@ -28,7 +29,7 @@ namespace D2L.Services.Core.Postgres {
 			string columnName
 		) {
 			int index = record.GetOrdinal( columnName );
-			return DbTypeConverter.FromDbValue<T>( record.GetValue( index ) );
+			return DbTypeConverter<T>.FromDbValue( record.GetValue( index ) );
 		}
 		
 		/// <summary>
@@ -56,7 +57,7 @@ namespace D2L.Services.Core.Postgres {
 		) {
 			return database.ExecReadOfflineAsync<T>(
 				command,
-				record => DbTypeConverter.FromDbValue<T>( record.GetValue( 0 ) )
+				record => DbTypeConverter<T>.FromDbValue( record.GetValue( 0 ) )
 			);
 		}
 		

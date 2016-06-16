@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Integration" />
+    <Folder Include="Types" />
     <Folder Include="Unit" />
   </ItemGroup>
   <ItemGroup>
@@ -64,7 +65,10 @@
     <Compile Include="Integration\IntegrationTestFixtureBase.cs" />
     <Compile Include="Integration\PostgresExecutorTests.cs" />
     <Compile Include="Integration\PostgresTransactionTests.cs" />
+    <Compile Include="Integration\TypeConverterTests.cs" />
+    <Compile Include="Types\TestId.cs" />
     <Compile Include="Unit\PostgresCommandTests.cs" />
+    <Compile Include="Unit\DbTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using D2L.Services.Core.Postgres.TypeConverters;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -34,7 +35,7 @@ namespace D2L.Services.Core.Postgres.Default {
 				);
 			}
 			
-			return DbTypeConverter.FromDbValue<T>( result );
+			return DbTypeConverter<T>.FromDbValue( result );
 		}
 		
 		public async Task<T> ExecReadScalarOrDefaultAsync<T>(
@@ -50,7 +51,7 @@ namespace D2L.Services.Core.Postgres.Default {
 				return defaultValue;
 			}
 			
-			return DbTypeConverter.FromDbValue<T>( result );
+			return DbTypeConverter<T>.FromDbValue( result );
 		}
 		
 		public async Task<Dto> ExecReadFirstAsync<Dto>(
