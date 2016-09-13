@@ -62,10 +62,12 @@ namespace D2L.Services.Core.Postgres.TypeConverters {
 			
 			if( IsGenericTypeOf( typeof( T ), typeof( IEnumerable<> ) ) ) {
 				Type elementType = typeof( T ).GetGenericArguments()[0];
+				object innerConverter = GetConverterForType( elementType );
+				
 				return CreateWrappingConverter(
 					genericTypeConverter: typeof( EnumerableTypeConverter<> ),
 					innerType: elementType,
-					innerConverter: GetConverterForType( elementType )
+					innerConverter: innerConverter
 				);
 			}
 			

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using D2L.Services.Core.Postgres.Tests.Types;
 using D2L.Services.Core.TestFramework;
@@ -58,34 +60,45 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			await RunNullableTypeTestAsync( value: null ).SafeAsync();
 		}
 		
-		[Test]
-		public async Task ArrayConversion_SimpleCase() {
+		[TestCase( EnumerableType.Array )]
+		[TestCase( EnumerableType.IList )]
+		[TestCase( EnumerableType.IEnumerable )]
+		public async Task ArrayConversion_SimpleCase( EnumerableType enumerableType ) {
 			await RunArrayTableTestAsync(
 				new TestId[]{ new TestId( Guid.NewGuid() ), new TestId( Guid.NewGuid() ) },
-				new string[]{ "1", "2", "3" }
+				new string[]{ "1", "2", "3" },
+				enumerableType
 			).SafeAsync();
 		}
 		
-		[Test]
-		public async Task ArrayConversion_ArrayIsNull() {
-			await RunArrayTableTestAsync( null, null ).SafeAsync();
+		[TestCase( EnumerableType.Array )]
+		[TestCase( EnumerableType.IList )]
+		[TestCase( EnumerableType.IEnumerable )]
+		public async Task ArrayConversion_ArrayIsNull( EnumerableType enumerableType ) {
+			await RunArrayTableTestAsync( null, null, enumerableType ).SafeAsync();
 		}
 		
-		[Test]
-		public async Task ArrayConversion_EmptyArray() {
+		[TestCase( EnumerableType.Array )]
+		[TestCase( EnumerableType.IList )]
+		[TestCase( EnumerableType.IEnumerable )]
+		public async Task ArrayConversion_EmptyArray( EnumerableType enumerableType ) {
 			await RunArrayTableTestAsync(
 				new TestId[]{},
-				new string[]{}
+				new string[]{},
+				enumerableType
 			).SafeAsync();
 		}
 		
-		[Test]
-		public async Task ArrayConversion_StringArrayWithNullValues() {
+		[TestCase( EnumerableType.Array )]
+		[TestCase( EnumerableType.IList )]
+		[TestCase( EnumerableType.IEnumerable )]
+		public async Task ArrayConversion_StringArrayWithNullValues( EnumerableType enumerableType ) {
 			// Npgsql doesn't support reading arrays of nullables that contain
 			// NULL values, but it does support arrays of string with NULLs
 			await RunArrayTableTestAsync(
 				null,
-				new string[]{ null, "", "TEST" }
+				new string[]{ null, "", "TEST" },
+				enumerableType
 			).SafeAsync();
 		}
 		
@@ -151,7 +164,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		
 		private async Task RunArrayTableTestAsync(
 			TestId[] testIdArray,
-			string[] stringArray
+			string[] stringArray,
+			EnumerableType enumerableType
 		) {
 			PostgresCommand cmd;
 			
@@ -160,8 +174,24 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 				VALUES( :guid_array, :string_array )
 				RETURNING id"
 			);
-			cmd.AddParameter( "guid_array", testIdArray );
-			cmd.AddParameter( "string_array", stringArray );
+			
+			switch( enumerableType ) {
+				case EnumerableType.Array:
+					cmd.AddParameter<TestId[]>( "guid_array", testIdArray );
+					cmd.AddParameter<string[]>( "string_array", stringArray );
+					break;
+				case EnumerableType.IList:
+					cmd.AddParameter<IList<TestId>>( "guid_array", testIdArray );
+					cmd.AddParameter<IList<string>>( "string_array", stringArray );
+					break;
+				case EnumerableType.IEnumerable:
+					cmd.AddParameter<IEnumerable<TestId>>( "guid_array", testIdArray );
+					cmd.AddParameter<IEnumerable<string>>( "string_array", stringArray );
+					break;
+				default:
+					throw new InvalidEnumArgumentException();
+			}
+			
 			
 			int id = await m_database.ExecReadScalarAsync<int>( cmd ).SafeAsync();
 			
@@ -171,9 +201,24 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			);
 			cmd.AddParameter( "id", id );
 			
+			Func<IDataRecord,ArrayTableDto> converter;
+			switch( enumerableType ) {
+				case EnumerableType.Array:
+					converter = ArrayTableDto.ArrayConverter;
+					break;
+				case EnumerableType.IList:
+					converter = ArrayTableDto.IListConverter;
+					break;
+				case EnumerableType.IEnumerable:
+					converter = ArrayTableDto.IEnumerableConverter;
+					break;
+				default:
+					throw new InvalidEnumArgumentException();
+			}
+			
 			ArrayTableDto record = await m_database.ExecReadFirstAsync(
 				cmd,
-				ArrayTableDto.DbConverter
+				ArrayTableDto.ArrayConverter
 			).SafeAsync();
 			
 			CollectionAssert.AreEqual( testIdArray, record.TestIdArray );
@@ -197,13 +242,33 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			internal TestId[] TestIdArray { get { return m_testIdArray; } }
 			internal string[] StringArray { get { return m_stringArray; } }
 			
-			internal static ArrayTableDto DbConverter( IDataRecord record ) {
+			internal static ArrayTableDto ArrayConverter( IDataRecord record ) {
 				return new ArrayTableDto(
 					record.Get<TestId[]>( "guid_array" ),
 					record.Get<string[]>( "string_array" )
 				);
 			}
 			
+			internal static ArrayTableDto IListConverter( IDataRecord record ) {
+				return new ArrayTableDto(
+					record.Get<IList<TestId>>( "guid_array" ).ToArray(),
+					record.Get<IList<string>>( "string_array" ).ToArray()
+				);
+			}
+			
+			internal static ArrayTableDto IEnumerableConverter( IDataRecord record ) {
+				return new ArrayTableDto(
+					record.Get<IEnumerable<TestId>>( "guid_array" ).ToArray(),
+					record.Get<IEnumerable<string>>( "string_array" ).ToArray()
+				);
+			}
+			
+		}
+		
+		public enum EnumerableType {
+			Array,
+			IList,
+			IEnumerable
 		}
 		
 	}
