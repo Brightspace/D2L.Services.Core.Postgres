@@ -113,6 +113,14 @@ namespace D2L.Services.Core.Postgres.Tests.Unit {
 			Assert.IsTrue( innerConverter is DateTimeTypeConverter );
 		}
 		
+		[Test]
+		public void CoverterOnlyConstructedOnce() {
+			var converter = (TestId.PgConverter)DbTypeConverter<TestId>.Converter;
+			var nullableConverter = (NullableTypeConverter<TestId>)DbTypeConverter<TestId?>.Converter;
+			
+			Assert.AreSame( converter, nullableConverter.m_innerConverter );
+		}
+		
 	}
 	
 }

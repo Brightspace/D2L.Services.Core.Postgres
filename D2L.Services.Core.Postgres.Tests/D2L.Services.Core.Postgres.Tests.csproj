@@ -67,6 +67,7 @@
     <Compile Include="Integration\PostgresTransactionTests.cs" />
     <Compile Include="Integration\TypeConverterTests.cs" />
     <Compile Include="Types\TestId.cs" />
+    <Compile Include="Unit\DefaultTypeConverterTests.cs" />
     <Compile Include="Unit\PostgresCommandTests.cs" />
     <Compile Include="Unit\DbTypeConverterTests.cs" />
   </ItemGroup>
