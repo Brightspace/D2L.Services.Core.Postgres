@@ -13,14 +13,13 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 	[TestFixture, Integration, RequiresDatabase]
 	internal sealed class PostgresExecutorTests : IntegrationTestFixtureBase {
 		
-		[SetUp]
-		public void SetUp() {
-			CleanDatabaseAsync().SafeWait();
-		}
-		
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() {
-			CleanDatabaseAsync().SafeWait();
+		[SetUp, TestFixtureTearDown]
+		public void Cleanup() {
+			PostgresCommand cmd = new PostgresCommand( @"
+				DELETE FROM basic_table;
+				DELETE FROM datetime_table;"
+			);
+			m_database.ExecNonQueryAsync( cmd ).SafeWait();
 		}
 		
 		// Test both PostgresDatabase and PostgresTransaction in the same test
@@ -456,13 +455,6 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 		}
 		
-		private Task CleanDatabaseAsync() {
-			PostgresCommand cmd = new PostgresCommand( @"
-				DELETE FROM basic_table;
-				DELETE FROM datetime_table;"
-			);
-			return m_database.ExecNonQueryAsync( cmd );
-		}
 		
 		private sealed class TestRecord {
 			private readonly Guid m_id;

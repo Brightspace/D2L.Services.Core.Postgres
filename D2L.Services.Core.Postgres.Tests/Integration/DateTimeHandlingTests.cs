@@ -34,8 +34,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			Assert.AreEqual( DateTimeKind.Utc, m_utcTime.Kind );
 		}
 		
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() {
+		[SetUp, TestFixtureTearDown]
+		public void Cleanup() {
 			PostgresCommand cmd = new PostgresCommand(
 				"DELETE FROM datetime_table"
 			);
@@ -107,6 +107,58 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			fetchedDateTime = await m_database.ExecReadScalarAsync<DateTime?>( cmd ).SafeAsync();
 			Assert.IsFalse( fetchedDateTime.HasValue );
 			Assert.IsNull( fetchedDateTime );
+		}
+		
+		[Test]
+		public async Task WriteAndRead_DateTimeArray() {
+			DateTime[] localTimestamps = {
+				RoundToMilliseconds( DateTime.Now ),
+				DotNetExtensions.UNIX_EPOCH.ToLocalTime()
+			};
+			
+			DateTime[] utcTimestamps = {
+				RoundToMilliseconds( DateTime.UtcNow ),
+				DotNetExtensions.UNIX_EPOCH
+			};
+			
+			PostgresCommand cmd = new PostgresCommand( @"
+				INSERT INTO datetime_array_table( utc_timestamps, local_timestamps )
+				VALUES( :utc_times, :local_times )
+				RETURNING id"
+			);
+			cmd.AddParameter<DateTime[]>( "utc_times", utcTimestamps );
+			cmd.AddParameter<DateTime[]>( "local_times", localTimestamps );
+			
+			int id = await m_database.ExecReadScalarAsync<int>( cmd ).SafeAsync();
+			DateTime[] fetchedTimestamps;
+			
+			// Verify UTC timestamps
+			
+			cmd = new PostgresCommand( @"
+				SELECT utc_timestamps FROM datetime_array_table
+				WHERE id = :id"
+			);
+			cmd.AddParameter<int>( "id", id );
+			
+			fetchedTimestamps = await m_database.ExecReadScalarAsync<DateTime[]>( cmd ).SafeAsync();
+			foreach( DateTime timestamp in fetchedTimestamps ) {
+				Assert.AreEqual( DateTimeKind.Utc, timestamp.Kind );
+			}
+			CollectionAssert.AreEqual( utcTimestamps, fetchedTimestamps );
+			
+			// Verify local timestamps
+			
+			cmd = new PostgresCommand( @"
+				SELECT local_timestamps FROM datetime_array_table
+				WHERE id = :id"
+			);
+			cmd.AddParameter<int>( "id", id );
+			
+			fetchedTimestamps = await m_database.ExecReadScalarAsync<DateTime[]>( cmd ).SafeAsync();
+			foreach( DateTime timestamp in fetchedTimestamps ) {
+				Assert.AreEqual( DateTimeKind.Local, timestamp.Kind );
+			}
+			CollectionAssert.AreEqual( localTimestamps, fetchedTimestamps );
 		}
 		
 		

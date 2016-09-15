@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="D2L.Services.Core.Extensions">
-      <HintPath>..\packages\D2L.Services.Core.Extensions.1.3.0.0\lib\net451\D2L.Services.Core.Extensions.dll</HintPath>
+      <HintPath>..\packages\D2L.Services.Core.Extensions.1.4.0.0\lib\net451\D2L.Services.Core.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="D2L.Services.Core.TestFramework">
       <HintPath>..\packages\D2L.Services.Core.TestFramework.3.1.0\lib\net451\D2L.Services.Core.TestFramework.dll</HintPath>
@@ -46,7 +46,7 @@
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql">
-      <HintPath>..\packages\Npgsql.3.1.4\lib\net451\Npgsql.dll</HintPath>
+      <HintPath>..\packages\Npgsql.3.1.7\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Integration" />
+    <Folder Include="Types" />
     <Folder Include="Unit" />
   </ItemGroup>
   <ItemGroup>
@@ -64,7 +65,11 @@
     <Compile Include="Integration\IntegrationTestFixtureBase.cs" />
     <Compile Include="Integration\PostgresExecutorTests.cs" />
     <Compile Include="Integration\PostgresTransactionTests.cs" />
+    <Compile Include="Integration\TypeConverterTests.cs" />
+    <Compile Include="Types\TestId.cs" />
+    <Compile Include="Unit\DefaultTypeConverterTests.cs" />
     <Compile Include="Unit\PostgresCommandTests.cs" />
+    <Compile Include="Unit\DbTypeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

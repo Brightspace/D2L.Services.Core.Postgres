@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using D2L.Services.Core.Postgres.TypeConverters;
+using Npgsql;
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
@@ -75,28 +76,7 @@ namespace D2L.Services.Core.Postgres {
 		/// <param name="name">The name of the parameter.</param>
 		/// <param name="value">The value to use for the parameter.</param>
 		public void AddParameter<T>( string name, T value ) {
-			if( value is DateTime ) {
-				switch( ((DateTime)(object)value).Kind ) {
-					case DateTimeKind.Utc:
-						AddParameter<T>( name, value, NpgsqlDbType.Timestamp );
-						return;
-					case DateTimeKind.Local:
-						AddParameter<T>( name, value, NpgsqlDbType.TimestampTZ );
-						return;
-					default:
-						throw new ArgumentException(
-							message: "Cannot infer Postgres type from a DateTime of kind Unspecified.",
-							paramName: "value"
-						);
-				}
-			}
-			
-			var parameter = new NpgsqlParameter(
-				parameterName: name,
-				value: DbTypeConverter.ToDbValue( value )
-			);
-			
-			m_parameters.Add( parameter );
+			this.AddParameter( name, value, DbTypeConverter<T>.DatabaseType );
 		}
 		
 		/// <summary>
@@ -111,7 +91,7 @@ namespace D2L.Services.Core.Postgres {
 		public void AddParameter<T>( string name, T value, NpgsqlDbType dbType ) {
 			var parameter = new NpgsqlParameter(
 				parameterName: name,
-				value: DbTypeConverter.ToDbValue( value )
+				value: DbTypeConverter<T>.ToDbValue( value )
 			);
 			
 			parameter.NpgsqlDbType = dbType;

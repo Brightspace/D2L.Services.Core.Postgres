@@ -10,6 +10,14 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 	[TestFixture, Integration, RequiresDatabase]
 	internal sealed class PostgresTransactionTests : IntegrationTestFixtureBase {
 		
+		[TestFixtureSetUp, TestFixtureTearDown]
+		public void Cleanup() {
+			PostgresCommand cmd = new PostgresCommand(
+				"DELETE FROM basic_table"
+			);
+			m_database.ExecNonQueryAsync( cmd ).SafeWait();
+		}
+		
 		[Test, Timed]
 		public async Task TransactionRollback_ExpectCorrectErrorClass() {
 			
