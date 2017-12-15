@@ -1,0 +1,9 @@
+{
+ "mirrormereProductId": 76,
+ "repoOwner": "Matt.Pharoah@d2l.com",
+ "platform": ".net",
+ "codeType": "library",
+ "deployment": "prod",
+ "devStatus": "maintenance",
+ "awsAccountNames": null
+}
