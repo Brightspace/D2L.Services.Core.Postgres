@@ -13,14 +13,19 @@ namespace D2L.Services.Core.Postgres.TypeConverters.Default {
 			// to use Reflection in order to access it. This only needs to be
 			// done once per type.
 			Assembly npgsqlAssembly = Assembly.GetAssembly( typeof( NpgsqlDbType ) );
-			Type typeHandlerRegistry = npgsqlAssembly.GetType( "Npgsql.TypeHandlerRegistry" );
-			m_dbType = (NpgsqlDbType)typeHandlerRegistry.GetMethod(
+			Type typeMapperType = npgsqlAssembly.GetType( "Npgsql.TypeMapping.GlobalTypeMapper" );
+			object typeMapper = typeMapperType.GetProperty(
+				name: "Instance",
+				bindingAttr: BindingFlags.Static | BindingFlags.Public
+			).GetMethod.Invoke( null, new object[] {} );
+
+			m_dbType = (NpgsqlDbType)typeMapperType.GetMethod(
 				name: "ToNpgsqlDbType",
-				bindingAttr: BindingFlags.NonPublic | BindingFlags.Static,
+				bindingAttr: BindingFlags.Instance | BindingFlags.NonPublic,
 				binder: null,
 				types: new Type[]{ typeof( Type ) },
 				modifiers: null
-			).Invoke( null, new object[]{ typeof( T ) } );
+			).Invoke( typeMapper, new object[]{ typeof( T ) } );
 		}
 		
 		object IPostgresTypeConverter<T>.ToDbValue( T value ) {
