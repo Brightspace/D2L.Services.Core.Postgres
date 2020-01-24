@@ -16,6 +16,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>1591,1030</WarningsNotAsErrors>
+	<NoWarn>NU5128</NoWarn>
     <BaseIntermediateOutputPath>..\obj\</BaseIntermediateOutputPath>
     <OutputPath>..\build\output\</OutputPath>
     <DocumentationFile>..\build\output\D2L.Services.Core.Postgres.xml</DocumentationFile>
