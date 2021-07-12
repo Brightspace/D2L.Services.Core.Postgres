@@ -8,3 +8,5 @@ NuGet.exe
 *.suo
 /D2L.Services.Core.Postgres.Tests/OpenCover
 /doc
+/D2L.Services.Core.Postgres/obj
+/D2L.Services.Core.Postgres.Tests/obj

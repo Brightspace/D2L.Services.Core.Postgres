@@ -15,7 +15,7 @@ namespace D2L.Services.Core.Postgres.Tests {
 			"Port=5432;" +
 			"Database=postgres-library-test;";
 		
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUpBase() {
 			m_database = PostgresDatabaseProvider.Create( TEST_CONNECTION_STRING );
 		}

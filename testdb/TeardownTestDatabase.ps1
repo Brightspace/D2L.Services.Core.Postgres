@@ -1,5 +1,5 @@
 Param(
-	[parameter( Mandatory = $false )][string] $pgBinPath = "C:\Program Files\PostgreSQL\9.5\bin"
+	[parameter( Mandatory = $false )][string] $pgBinPath = "C:\Program Files\PostgreSQL\12\bin"
 )
 
 $script:thisDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
