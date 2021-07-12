@@ -25,7 +25,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		private DateTime m_localTime;
 		private DateTime m_utcTime;
 		
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp() {
 			m_localTime = RoundToMilliseconds( DateTime.Now );
 			m_utcTime = RoundToMilliseconds( DateTime.UtcNow );
@@ -34,7 +34,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			Assert.AreEqual( DateTimeKind.Utc, m_utcTime.Kind );
 		}
 		
-		[SetUp, TestFixtureTearDown]
+		[SetUp, OneTimeTearDown]
 		public void Cleanup() {
 			PostgresCommand cmd = new PostgresCommand(
 				"DELETE FROM datetime_table"

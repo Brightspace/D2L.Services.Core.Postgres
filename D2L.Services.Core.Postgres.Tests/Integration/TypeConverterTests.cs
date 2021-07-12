@@ -13,7 +13,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 	[TestFixture, Integration]
 	internal sealed class TypeConverterTests : IntegrationTestFixtureBase {
 		
-		[SetUp, TestFixtureTearDown]
+		[SetUp, OneTimeTearDown]
 		public void Cleanup() {
 			PostgresCommand cmd = new PostgresCommand( @"
 				DELETE FROM basic_table;
