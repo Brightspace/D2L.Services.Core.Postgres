@@ -119,7 +119,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", Guid.NewGuid() );
-			Assert.Throws<DataNotFoundException>( async() =>
+			Assert.ThrowsAsync<DataNotFoundException>( async() =>
 				await RunAsync(
 					async executor => fetchedComment = await executor.ExecReadScalarAsync<string>( cmd ).SafeAsync(),
 					useTransaction
@@ -219,7 +219,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			
 			cmd = new PostgresCommand( fetchCommand );
 			cmd.AddParameter<Guid>( "id", Guid.NewGuid() );
-			Assert.Throws<DataNotFoundException>( async() =>
+			Assert.ThrowsAsync<DataNotFoundException>( async() =>
 				await RunAsync(
 					async executor => fetchedRecord = await executor.ExecReadFirstAsync<TestRecord>( cmd, TestRecord.DbConverter ).SafeAsync(),
 					useTransaction

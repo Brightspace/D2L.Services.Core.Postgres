@@ -49,7 +49,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.CommitAsync().SafeAsync();
-				Assert.Throws<ObjectDisposedException>(
+				Assert.ThrowsAsync<ObjectDisposedException>(
 					async() => await transaction.CommitAsync().SafeAsync()
 				);
 			}
@@ -71,7 +71,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.CommitAsync().SafeAsync();
-				Assert.Throws<InvalidOperationException>(
+				Assert.ThrowsAsync<InvalidOperationException>(
 					async() => await transaction.RollbackAsync().SafeAsync()
 				);
 			}
@@ -83,7 +83,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.RollbackAsync().SafeAsync();
-				Assert.Throws<ObjectDisposedException>(
+				Assert.ThrowsAsync<ObjectDisposedException>(
 					async() => await transaction.CommitAsync().SafeAsync()
 				);
 			}
@@ -95,7 +95,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.CommitAsync().SafeAsync();
-				Assert.Throws<ObjectDisposedException>(
+				Assert.ThrowsAsync<ObjectDisposedException>(
 					async() => await transaction.ExecNonQueryAsync( cmd ).SafeAsync()
 				);
 			}
@@ -107,7 +107,7 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.RollbackAsync().SafeAsync();
-				Assert.Throws<ObjectDisposedException>(
+				Assert.ThrowsAsync<ObjectDisposedException>(
 					async() => await transaction.ExecNonQueryAsync( cmd ).SafeAsync()
 				);
 			}
