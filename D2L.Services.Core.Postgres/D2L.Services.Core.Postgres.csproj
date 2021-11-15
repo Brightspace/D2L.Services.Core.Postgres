@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <OutputType>Library</OutputType>
     <RestorePackages>true</RestorePackages>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -16,6 +16,10 @@
     <Folder Include="Default" />
     <Folder Include="TypeConverters" />
     <Folder Include="TypeConverters\Default" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="D2L.Services.Core.Extensions" Version="3.0.0.50" />
+    <PackageReference Update="Npgsql" Version="5.0.11" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

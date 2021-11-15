@@ -7,7 +7,7 @@ using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres.Default {
-	
+
 	internal abstract class PostgresExecutorBase : IPostgresExecutor {
 		
 		public async Task<int> ExecNonQueryAsync(

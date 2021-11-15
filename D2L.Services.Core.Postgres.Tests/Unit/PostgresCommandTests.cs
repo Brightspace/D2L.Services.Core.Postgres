@@ -14,14 +14,14 @@ namespace D2L.Services.Core.Postgres.Tests.Unit {
 			const string COMMAND_TEXT = "SELECT 1 AS one";
 			const int TIMEOUT_SECONDS = 88;
 			
-			var cmd = new PostgresCommand( COMMAND_TEXT );
+			var cmd = new PostgresCommand( COMMAND_TEXT, prepared: false );
 			cmd.AddParameter<int?>( "arg1", 8 );
 			cmd.AddParameter<int?>( "arg2", null );
 			cmd.AddParameter<string>( "arg3", "{}", NpgsqlDbType.Jsonb );
 			cmd.Timeout = TIMEOUT_SECONDS;
 			
 			NpgsqlConnection connection = new NpgsqlConnection();
-			NpgsqlCommand builtCommand = cmd.Build( connection );
+			NpgsqlCommand builtCommand = cmd.BuildAsync( connection ).SafeWait();
 			
 			Assert.AreEqual( COMMAND_TEXT, builtCommand.CommandText );
 			Assert.AreEqual( TIMEOUT_SECONDS, builtCommand.CommandTimeout );

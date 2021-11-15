@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle( "D2L.Services.Core.Postgres" )]
@@ -13,4 +12,4 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible( false )]
 
-[assembly: AssemblyVersion( "3.0.1" )]
+[assembly: AssemblyVersion( "4.0.0" )]

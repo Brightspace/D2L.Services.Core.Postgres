@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using D2L.Services.Core.Postgres.TypeConverters;
+﻿using D2L.Services.Core.Postgres.TypeConverters;
 using Npgsql;
-using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres {
-	
+
 	// Disable warnings about no documentation for 'this' parameters and the
 	// PostgresExtensionMethods class itself
-	#pragma warning disable 1591
-	#pragma warning disable 1573
-	
+#pragma warning disable 1591
+#pragma warning disable 1573
+
 	[EditorBrowsable( EditorBrowsableState.Never )]
 	public static class PostgresExtensionMethods {
 		

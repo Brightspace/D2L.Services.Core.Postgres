@@ -1,15 +1,15 @@
-﻿using System;
+﻿using D2L.Services.Core.TestFramework;
+using Npgsql;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using D2L.Services.Core.TestFramework;
-using Npgsql;
-using NUnit.Framework;
 
 namespace D2L.Services.Core.Postgres.Tests.Integration {
-	
+
 	// Tests common to both IPostgresDatabase and IPostgresTransaction
-	
+
 	[TestFixture, Integration, RequiresDatabase]
 	internal sealed class PostgresExecutorTests : IntegrationTestFixtureBase {
 		
@@ -29,10 +29,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 			bool useTransaction
 		) {
 			if( useTransaction ) {
-				using(
-					IPostgresTransaction transaction =
-					await m_database.NewTransactionAsync().SafeAsync()
-				) {
+				IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync();
+				await using( transaction.Handle ) {
 					await function( transaction ).SafeAsync();
 					await transaction.CommitAsync().SafeAsync();
 				}

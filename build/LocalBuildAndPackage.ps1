@@ -25,7 +25,7 @@ if( !$match.Success ) {
 $version = $match.Groups[1].Value
 
 # Make NuGet package
-nuget pack "$projectDir\$project.csproj" -Version $version -Properties "Configuration=Release" -Build -NonInteractive
+nuget pack "$projectDir\$project.csproj" -Version $version -Properties "Configuration=Release" -Build -NonInteractive -NoPackageAnalysis
 
 if( !$? ) {
 	Write-Host
