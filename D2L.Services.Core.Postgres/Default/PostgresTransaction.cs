@@ -1,17 +1,23 @@
 ﻿using Npgsql;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres.Default {
-	
+
 	internal sealed class PostgresTransaction : PostgresExecutorBase, IPostgresTransaction {
-		
+
+		private enum TransactionState {
+			Uncommited,
+			Commited,
+			RolledBack
+		}
+
 		private readonly NpgsqlConnection m_connection;
 		private readonly NpgsqlTransaction m_transaction;
-		private bool m_isDisposed = false;
-		private bool m_hasCommitted = false;
+		private TransactionState m_state = TransactionState.Uncommited;
 		
-		internal async static Task<IPostgresTransaction> ConstructAsync(
+		static internal async Task<IPostgresTransaction> ConstructAsync(
 			string connectionString,
 			PostgresIsolationLevel pgIsolationLevel
 		) {
@@ -24,10 +30,10 @@ namespace D2L.Services.Core.Postgres.Default {
 					pgIsolationLevel.ToAdoIsolationLevel()
 				);
 				return new PostgresTransaction( connection, transaction );
-			} catch( Exception exception ) {
-				transaction.SafeDispose( ref exception );
-				connection.SafeDispose( ref exception );
-				throw exception;
+			} catch( Exception ) {
+				await transaction.SafeDisposeAsync().SafeAsync();
+				await connection.SafeDisposeAsync().SafeAsync();
+				throw;
 			}
 		}
 		
@@ -39,83 +45,73 @@ namespace D2L.Services.Core.Postgres.Default {
 			m_transaction = transaction;
 		}
 		
-		void IDisposable.Dispose() {
-			if( !m_isDisposed ) {
-				m_isDisposed = true;
-				m_transaction.SafeDispose();
-				m_connection.SafeDispose();
+		async ValueTask IAsyncDisposable.DisposeAsync() {
+			if( m_state == TransactionState.Uncommited ) {
+				m_state = TransactionState.RolledBack;
+				await m_transaction.SafeDisposeAsync().SafeAsync();
+				await m_connection.SafeDisposeAsync().SafeAsync();
 			}
 		}
 		
 		async Task IPostgresTransaction.CommitAsync() {
+			IPostgresTransaction @this = this;
 			AssertIsOpen();
 			
-			Exception commitException = null;
 			try {
 				await m_transaction.CommitAsync().SafeAsync();
-			} catch( Exception exception ) {
-				commitException = exception;
-			}
-			
-			IPostgresTransaction @this = this;
-			if( commitException != null ) {
+			} catch( Exception commitException ) {
 				try {
 					await @this.RollbackAsync().SafeAsync();
 				} catch( Exception rollbackException ) {
 					throw new AggregateException( commitException, rollbackException );
 				}
-				throw commitException;
 			}
-			
-			@this.Dispose();
-			m_hasCommitted = true;
+
+			await @this.DisposeAsync().SafeAsync();
+			m_state = TransactionState.Commited;
 		}
 		
 		async Task IPostgresTransaction.RollbackAsync() {
-			if( m_hasCommitted ) {
+			if( m_state == TransactionState.Commited ) {
 				throw new InvalidOperationException(
 					"The transaction could not be rolled back because it has " +
 					"already been successfully committed."
 				);
-			} else if( !m_isDisposed ) {
+			} else if( m_state == TransactionState.Uncommited ) {
 				try {
-					if( !m_transaction.IsCompleted ) {
-						await m_transaction.RollbackAsync().SafeAsync();
-					}
+					await m_transaction.RollbackAsync().SafeAsync();
 				} finally {
-					((IDisposable)this).Dispose();
+					await ((IAsyncDisposable)this).DisposeAsync().SafeAsync();
 				}
 			}
 		}
+
+		ConfiguredAsyncDisposable IPostgresTransaction.Handle => this.ConfigureAwait( false );
 		
-		protected async override Task ExecuteAsync(
+		protected override async Task ExecuteAsync(
 			PostgresCommand command,
 			Func<NpgsqlCommand,Task> action
 		) {
 			AssertIsOpen();
-			using( NpgsqlCommand cmd = command.Build( m_connection, m_transaction ) ) {
-				Exception commandException = null;
+			NpgsqlCommand cmd = await command.BuildAsync( m_connection, m_transaction ).SafeAsync();
+			await using ConfiguredAsyncDisposable handle = cmd.ConfigureAwait( false );
+
+			try {
+				await action( cmd ).SafeAsync();
+			} catch( Exception commandException ) {
 				try {
-					await action( cmd ).SafeAsync();
-				} catch( Exception ex ) {
-					commandException = ex;
+					await ((IPostgresTransaction)this).RollbackAsync().SafeAsync();
+				} catch( Exception rollbackException ) {
+					throw new AggregateException( commandException, rollbackException );
 				}
-				
-				if( commandException != null ) {
-					try {
-						await ((IPostgresTransaction)this).RollbackAsync().SafeAsync();
-					} catch( Exception rollbackException ) {
-						throw new AggregateException( commandException, rollbackException );
-					}
-					throw commandException;
-				}
+				throw;
 			}
 		}
 		
 		
 		private void AssertIsOpen() {
-			if( m_isDisposed ) {
-				throw new ObjectDisposedException( "PostgresTransaction" );
+			if( m_state != TransactionState.Uncommited ) {
+				throw new ObjectDisposedException( nameof( PostgresTransaction ) );
 			}
 		}
 		

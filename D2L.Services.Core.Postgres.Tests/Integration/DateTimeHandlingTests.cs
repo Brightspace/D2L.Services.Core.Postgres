@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using D2L.Services.Core.TestFramework;
 using NUnit.Framework;

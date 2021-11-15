@@ -9,7 +9,7 @@ namespace D2L.Services.Core.Postgres.Default {
 		private readonly string m_connectionString;
 		
 		internal PostgresDatabase( string npgsqlConnectionString ) {
-			m_connectionString = string.Copy( npgsqlConnectionString );
+			m_connectionString = npgsqlConnectionString;
 		}
 		
 		Task<IPostgresTransaction> IPostgresDatabase.NewTransactionAsync(
@@ -18,16 +18,19 @@ namespace D2L.Services.Core.Postgres.Default {
 			return PostgresTransaction.ConstructAsync( m_connectionString, isolationLevel );
 		}
 		
-		protected async override Task ExecuteAsync(
+		protected override async Task ExecuteAsync(
 			PostgresCommand command,
 			Func<NpgsqlCommand,Task> action
 		) {
-			using( var connection = new NpgsqlConnection( m_connectionString ) ) {
-				await connection.OpenAsync().SafeAsync();
-				using( NpgsqlCommand cmd = command.Build( connection ) ) {
-					await action( cmd ).SafeAsync();
-				}
-			}
+			NpgsqlConnection connection = new NpgsqlConnection( m_connectionString );
+			await using var connectionHandle = connection.ConfigureAwait( false );
+
+			await connection.OpenAsync().SafeAsync();
+
+			NpgsqlCommand cmd = await command.BuildAsync( connection ).SafeAsync();
+			await using var commandHandle = cmd.ConfigureAwait( false );
+
+			await action( cmd ).SafeAsync();
 		}
 		
 	}

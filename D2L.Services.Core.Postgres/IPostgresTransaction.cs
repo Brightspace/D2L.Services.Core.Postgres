@@ -1,15 +1,16 @@
 ﻿using Npgsql;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres {
-	
+
 	/// <summary>
 	/// The interface of a transaction against a Postgres database.
 	/// </summary>
 	/// <threadsafety instance="false" />
 	/// <seealso cref="IPostgresDatabase"/>
-	public interface IPostgresTransaction : IPostgresExecutor, IDisposable {
+	public interface IPostgresTransaction : IPostgresExecutor, IAsyncDisposable {
 		
 		/// <summary>
 		/// Commit the transaction and close the connection. If the commit
@@ -68,6 +69,14 @@ namespace D2L.Services.Core.Postgres {
 		/// be rolled back.
 		/// </exception>
 		Task RollbackAsync();
+
+		/// <summary>
+		/// Safely get a handle for the transaction that you can await
+		/// </summary>
+		/// <example>
+		/// <code>await using var handle = transaction.Handle;</code>
+		/// </example>
+		ConfiguredAsyncDisposable Handle { get; }
 		
 	}
 	

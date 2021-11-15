@@ -1,12 +1,12 @@
 ﻿
-using System;
-using System.Threading.Tasks;
 using D2L.Services.Core.TestFramework;
 using Npgsql;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres.Tests.Integration {
-	
+
 	[TestFixture, Integration, RequiresDatabase]
 	internal sealed class PostgresTransactionTests : IntegrationTestFixtureBase {
 		
@@ -46,7 +46,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		[Test]
 		public async Task DoubleCommit_ExpectObjectDisposedException() {
 			PostgresCommand cmd = new PostgresCommand( "SELECT 1" );
-			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
+			IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync();
+			await using( transaction.Handle ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.CommitAsync().SafeAsync();
 				Assert.ThrowsAsync<ObjectDisposedException>(
@@ -58,7 +59,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		[Test]
 		public async Task DoubleRollback_DoesNotThrowException() {
 			PostgresCommand cmd = new PostgresCommand( "SELECT 1" );
-			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
+			IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync();
+			await using( transaction.Handle ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.RollbackAsync().SafeAsync();
 				await transaction.RollbackAsync().SafeAsync();
@@ -68,7 +70,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		[Test]
 		public async Task CommitThenRollback_ExpectInvalidOperationException() {
 			PostgresCommand cmd = new PostgresCommand( "SELECT 1" );
-			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
+			IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync();
+			await using( transaction.Handle ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.CommitAsync().SafeAsync();
 				Assert.ThrowsAsync<InvalidOperationException>(
@@ -80,7 +83,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		[Test]
 		public async Task RollbackThenCommit_ExpectObjectDisposedException() {
 			PostgresCommand cmd = new PostgresCommand( "SELECT 1" );
-			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
+			IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync();
+			await using( transaction.Handle ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.RollbackAsync().SafeAsync();
 				Assert.ThrowsAsync<ObjectDisposedException>(
@@ -92,7 +96,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		[Test]
 		public async Task ExecCommandAfterCommit_ExpectObjectDisposedException() {
 			PostgresCommand cmd = new PostgresCommand( "SELECT 1" );
-			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
+			IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync();
+			await using( transaction.Handle ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.CommitAsync().SafeAsync();
 				Assert.ThrowsAsync<ObjectDisposedException>(
@@ -104,7 +109,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		[Test]
 		public async Task ExecCommandAfterRollback_ExpectObjectDisposedException() {
 			PostgresCommand cmd = new PostgresCommand( "SELECT 1" );
-			using( IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync() ) {
+			IPostgresTransaction transaction = await m_database.NewTransactionAsync().SafeAsync();
+			await using( transaction.Handle ) {
 				await transaction.ExecNonQueryAsync( cmd ).SafeAsync();
 				await transaction.RollbackAsync().SafeAsync();
 				Assert.ThrowsAsync<ObjectDisposedException>(
@@ -116,9 +122,8 @@ namespace D2L.Services.Core.Postgres.Tests.Integration {
 		
 		private async Task RunTransactionAsync( Guid initialId ) {
 			PostgresCommand cmd;
-			using( IPostgresTransaction transaction =
-				await m_database.NewTransactionAsync( PostgresIsolationLevel.RepeatableRead ).SafeAsync()
-			) {
+			IPostgresTransaction transaction = await m_database.NewTransactionAsync( PostgresIsolationLevel.RepeatableRead ).SafeAsync();
+			await using( transaction.Handle ) {
 				cmd = new PostgresCommand( @"
 					SELECT * FROM basic_table
 						WHERE id = :id"

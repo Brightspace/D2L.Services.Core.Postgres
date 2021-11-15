@@ -3,9 +3,10 @@ using Npgsql;
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres {
-	
+
 	/// <summary>
 	/// Represents a SQL statement to execute against a PostgreSQL database.
 	/// <para>
@@ -18,22 +19,27 @@ namespace D2L.Services.Core.Postgres {
 	public sealed class PostgresCommand {
 		
 		private readonly List<NpgsqlParameter> m_parameters = new List<NpgsqlParameter>();
-		private int? m_timeout = null;
 		private string m_sql;
 		
 		/// <summary>
 		/// Initialize a new Postgres command with the given SQL query.
 		/// </summary>
 		/// <param name="sql">The text of the query.</param>
-		public PostgresCommand( string sql ) {
+		/// <param name="prepared">Prepare the transaction for fast re-use</param>
+		public PostgresCommand(
+			string sql,
+			bool prepared = true
+		) {
 			m_sql = sql;
+			this.Prepared = prepared;
+			this.Timeout = null;
 		}
 		
 		/// <summary>
 		/// Initialize a new Postgres command with an empty SQL query.
 		/// </summary>
 		public PostgresCommand() 
-			: this( string.Empty ) {}
+			: this( string.Empty, false ) {}
 		
 		/// <summary>
 		/// Initialize a new Postgres command, copying the SQL query text and
@@ -41,7 +47,7 @@ namespace D2L.Services.Core.Postgres {
 		/// </summary>
 		/// <param name="template">The existing command to copy.</param>
 		public PostgresCommand( PostgresCommand template )
-			: this( template.m_sql ) {
+			: this( template.m_sql, template.Prepared ) {
 			m_parameters.AddRange( template.m_parameters );
 		}
 		
@@ -105,13 +111,17 @@ namespace D2L.Services.Core.Postgres {
 		/// from the connection string is used (Defaults to 30 if not specified
 		/// in the connection string).
 		/// </summary>
-		public int? Timeout {
-			get { return m_timeout; }
-			set { m_timeout = value; }
-		}
+		public int? Timeout { get; set; }
+
+		/// <summary>
+		/// Whether or not the query should be prepared so that it doesn't need to
+		/// be parsed each execution. Defaults to <c>true</c>, but should be disabled
+		/// for dynamically generated SQL.
+		/// </summary>
+		public bool Prepared { get; set; }
 		
 		
-		internal NpgsqlCommand Build(
+		internal async Task<NpgsqlCommand> BuildAsync(
 			NpgsqlConnection connection,
 			NpgsqlTransaction transaction = null
 		) {
@@ -120,8 +130,12 @@ namespace D2L.Services.Core.Postgres {
 				cmd.Parameters.Add( parameter.Clone() );
 			}
 			
-			if( m_timeout.HasValue ) {
-				cmd.CommandTimeout = m_timeout.Value;
+			if( this.Timeout.HasValue ) {
+				cmd.CommandTimeout = this.Timeout.Value;
+			}
+
+			if( this.Prepared ) {
+				await cmd.PrepareAsync().SafeAsync();
 			}
 			
 			return cmd;

@@ -7,7 +7,7 @@ adds additional functionality. A version roadmap and full documentation can be f
 ### Running Integration Tests
 
 Before running the integration tests, you must build the test database. To do this, run the SetupTestDatabase.ps1
-script in the testdb directory. If your Postgres bin directory is not `C:\Program Files\PostgreSQL\9.5\bin`, then you
+script in the testdb directory. If your Postgres bin directory is not `C:\Program Files\PostgreSQL\12\bin`, then you
 will need to pass the path of your Postgres bin directory as an argument to the script.
 
 ### Generating or Updating the Documentation

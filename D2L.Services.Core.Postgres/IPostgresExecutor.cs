@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace D2L.Services.Core.Postgres {
-	
+
 	/// <summary>
 	/// A base interface for methods common to <see cref="IPostgresDatabase"/>
 	/// and <see cref="IPostgresTransaction"/>. See those interfaces for more

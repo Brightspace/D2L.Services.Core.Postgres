@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using D2L.Services.Core.Postgres.Tests.Types;
+using D2L.Services.Core.TestFramework;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using D2L.Services.Core.Postgres.Tests.Types;
-using D2L.Services.Core.TestFramework;
-using NUnit.Framework;
-using System;
 
 namespace D2L.Services.Core.Postgres.Tests.Integration {
-	
+
 	[TestFixture, Integration]
 	internal sealed class TypeConverterTests : IntegrationTestFixtureBase {
 		

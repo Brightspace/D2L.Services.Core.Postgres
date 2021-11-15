@@ -1,6 +1,4 @@
 ﻿
-using System;
-
 namespace D2L.Services.Core.Postgres {
 	
 	/// <summary>Identifies the error class of a Postgres error</summary>
