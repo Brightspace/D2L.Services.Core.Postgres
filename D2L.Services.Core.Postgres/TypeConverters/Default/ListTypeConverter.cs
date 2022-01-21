@@ -15,28 +15,39 @@ namespace D2L.Services.Core.Postgres.TypeConverters.Default {
 		}
 		
 		object IPostgresTypeConverter<IList<T>>.ToDbValue( IList<T> value ) {
-			if( value == null ) {
-				return DBNull.Value;
-			}
-			
-			object[] dbValues = new object[ value.Count ];
-			for( int i = 0; i < value.Count; i++ ) {
-				dbValues[i] = m_innerConverter.ToDbValue( value[i] );
-			}
-			
-			return dbValues;
+			return ToDbValueInternal( value );
 		}
 		
 		object IPostgresTypeConverter<List<T>>.ToDbValue( List<T> value ) {
-			IPostgresTypeConverter<IList<T>> @this = this;
-			return @this.ToDbValue( value );
+			return ToDbValueInternal( value );
+		}
+
+		private object ToDbValueInternal( IList<T> value ) {
+			if( value == null ) {
+				return DBNull.Value;
+			}
+
+			object[] dbValues = new object[value.Count];
+			for( int i = 0; i < value.Count; i++ ) {
+				dbValues[i] = m_innerConverter.ToDbValue( value[i] );
+			}
+
+			return dbValues;
 		}
 		
 		List<T> IPostgresTypeConverter<List<T>>.FromDbValue( object dbValue ) {
+			return FromDbValueInternal( dbValue );
+		}
+		
+		IList<T> IPostgresTypeConverter<IList<T>>.FromDbValue( object dbValue ) {
+			return FromDbValueInternal( dbValue );
+		}
+
+		private List<T> FromDbValueInternal( object dbValue ) {
 			if( dbValue is DBNull || dbValue == null ) {
 				return null;
 			}
-			
+
 			Array dbValues = (Array)dbValue;
 			List<T> values = new List<T>( dbValues.Length );
 			for( int i = 0; i < dbValues.LongLength; i++ ) {
@@ -44,12 +55,7 @@ namespace D2L.Services.Core.Postgres.TypeConverters.Default {
 			}
 			return values;
 		}
-		
-		IList<T> IPostgresTypeConverter<IList<T>>.FromDbValue( object dbValue ) {
-			IPostgresTypeConverter<List<T>> @this = this;
-			return @this.FromDbValue( dbValue );
-		}
-		
+
 		NpgsqlDbType IPostgresTypeConverter<List<T>>.DatabaseType {
 			get { return NpgsqlDbType.Array | m_innerConverter.DatabaseType; }
 		}
